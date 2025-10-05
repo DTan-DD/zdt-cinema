@@ -42,7 +42,12 @@ const startSendMailWorker = async () => {
         throw err; // cho BullMQ retry
       }
     },
-    { connection }
+    {
+      connection,
+      settings: {
+        stalledInterval: 0, // tắt hoàn toàn stalled job check
+      },
+    }
   );
 
   sendMailWorker.on("completed", async (job) => {

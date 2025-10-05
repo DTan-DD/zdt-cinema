@@ -18,14 +18,14 @@ import compression from "compression";
 import myLogger from "./loggers/mylogger.log.js";
 import { NotFoundError } from "./core/error.response.js";
 import { uuidv7 } from "uuidv7";
-import "./services/workers/updateBookingWorker.service.js";
+// import "./services/workers/updateBookingWorker.service.js";
 // import "./services/reconciliation/index.js";
 import queueDashboard from "./routes/queue.routes.js";
-import "./services/workers/sendEmailWorker.service.js";
+// import "./services/workers/sendEmailWorker.service.js";
 import movieRouter from "./routes/movie.routes.js";
 // import { rateLimitMiddleware } from "./middleware/rateLimit.middleware.js";
 import notificationRouter from "./routes/notification.routes.js";
-import "./services/workers/notificationWorker.service.js";
+// import "./services/workers/notificationWorker.service.js";
 
 const app = express();
 dotenv.config();

@@ -41,7 +41,12 @@ const startNotificationWorker = async () => {
         throw err; // để BullMQ retry
       }
     },
-    { connection }
+    {
+      connection,
+      settings: {
+        stalledInterval: 0, // tắt hoàn toàn stalled job check
+      },
+    }
   );
 
   // 3️⃣ Sự kiện hoàn thành job

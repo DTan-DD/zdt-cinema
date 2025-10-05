@@ -46,7 +46,12 @@ const startPaymentWorker = async () => {
         throw err; // để BullMQ retry
       }
     },
-    { connection }
+    {
+      connection,
+      settings: {
+        stalledInterval: 0, // tắt hoàn toàn stalled job check
+      },
+    }
   );
 
   updateBookingWorker.on("completed", async (job) => {
