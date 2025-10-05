@@ -25,7 +25,6 @@ import "./services/workers/sendEmailWorker.service.js";
 import movieRouter from "./routes/movie.routes.js";
 import { rateLimitMiddleware } from "./middleware/rateLimit.middleware.js";
 import notificationRouter from "./routes/notification.routes.js";
-import testNotificationRoutes from "./test/testNotification.js";
 import "./services/workers/notificationWorker.service.js";
 
 const app = express();
@@ -77,8 +76,6 @@ app.use("/v1/api/payment", paymentRoutes);
 // Route dashboard
 app.use("/v1/api/queue", queueDashboard);
 app.use("/v1/api/notifications", notificationRouter);
-
-app.use("/api", testNotificationRoutes);
 
 // handing error
 app.use((req, res, next) => {
