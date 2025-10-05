@@ -1,48 +1,64 @@
 // workers/paymentWorker.js
 import { Worker } from "bullmq";
-import IORedis from "ioredis";
 import PaymentLog from "../../models/paymentLog.model.js";
 import { inngest } from "../../inngest/index.js";
+import { connectRedis, disconnectRedis } from "../../../configs/redisConnection.js";
 
-const connection = new IORedis(process.env.REDIS_URL || "redis://localhost:6379", {
-  maxRetriesPerRequest: null, // ✅ bắt buộc cho BullMQ
-});
+const startSendMailWorker = async () => {
+  const connection = await connectRedis();
+  console.log("📨 Redis connected for sendMailWorker");
 
-const sendMailWorker = new Worker(
-  "paymentQueue",
-  async (job) => {
-    if (job.name !== "sendMail") return;
-    console.log("🚀 Running sendMailWorker...");
-    const { logId } = job.data;
-    const log = await PaymentLog.findById(logId);
-    if (!log) throw new Error("PaymentLog not found");
+  const sendMailWorker = new Worker(
+    "paymentQueue",
+    async (job) => {
+      if (job.name !== "sendMail") return;
+      console.log("🚀 Running sendMailWorker...");
+      const { logId } = job.data;
 
-    if (log.steps.sendMail.status === "SUCCESS") return;
+      const log = await PaymentLog.findById(logId);
+      if (!log) throw new Error("PaymentLog not found");
 
-    try {
-      // Send Confirmation Email await
-      await inngest.send({ name: "app/show.booked", data: { bookingId: log.bookingId } });
+      if (log.steps.sendMail.status === "SUCCESS") return;
 
-      log.steps.sendMail.status = "SUCCESS";
-      log.status = "SUCCESS"; // cả quy trình OK
-      await log.save();
-    } catch (err) {
-      log.steps.sendMail.status = "FAILED";
-      log.steps.sendMail.attempts += 1;
-      log.steps.sendMail.lastError = err.message;
-      await log.save();
-      throw err; // cho BullMQ retry
+      try {
+        // Gửi email xác nhận (event tới Inngest)
+        await inngest.send({
+          name: "app/show.booked",
+          data: { bookingId: log.bookingId },
+        });
+
+        log.steps.sendMail.status = "SUCCESS";
+        log.status = "SUCCESS"; // toàn bộ flow OK
+        await log.save();
+
+        console.log(`✅ Mail sent successfully for booking ${log.bookingId}`);
+      } catch (err) {
+        log.steps.sendMail.status = "FAILED";
+        log.steps.sendMail.attempts += 1;
+        log.steps.sendMail.lastError = err.message;
+        await log.save();
+
+        console.error(`❌ sendMailWorker failed: ${err.message}`);
+        throw err; // cho BullMQ retry
+      }
+    },
+    { connection }
+  );
+
+  sendMailWorker.on("completed", async (job) => {
+    console.log(`✅ Job ${job.id} done`);
+    await disconnectRedis(); // đóng Redis khi xong
+  });
+
+  sendMailWorker.on("failed", async (job, err) => {
+    const maxAttempts = job.opts.attempts ?? 3;
+    if (job.attemptsMade >= maxAttempts) {
+      console.error(`🚨 Job ${job.id} moved to DLQ after ${job.attemptsMade} attempts`);
     }
-  },
-  { connection }
-);
+  });
+};
 
-// DEAD LETTER: khi job fail vượt quá attempts
-sendMailWorker.on("failed", async (job, err) => {
-  const maxAttempts = job.opts.attempts ?? 3; // fallback
-  if (job.attemptsMade >= maxAttempts) {
-    console.error(`🚨 Job ${job.id} moved to DLQ after ${job.attemptsMade} attempts`);
-  }
+// ⚙️ Khởi động worker
+startSendMailWorker().catch((err) => {
+  console.error("❌ Failed to start sendMailWorker:", err);
 });
-
-export default sendMailWorker;

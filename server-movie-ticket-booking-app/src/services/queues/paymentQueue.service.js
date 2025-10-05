@@ -1,23 +1,27 @@
-// queues/paymentQueue.js
 import { Queue } from "bullmq";
-import IORedis from "ioredis";
+import { connectRedis } from "../../../configs/redisConnection.js";
 
-const connection = new IORedis(process.env.REDIS_URL || "redis://localhost:6379", {
-  maxRetriesPerRequest: null, // ✅ bắt buộc cho BullMQ
-});
+let connection;
 
-connection.set("test:key", "Hello Upstash!");
-connection.get("test:key").then(console.log);
+const initQueue = async () => {
+  connection = await connectRedis();
 
-export const paymentQueue = new Queue("paymentQueue", {
-  connection,
-  defaultJobOptions: {
-    attempts: 3, // retry tối đa 5 lần
-    backoff: {
-      type: "exponential", // delay tăng dần
-      delay: 10000, // lần 1 chờ 10s, lần 2 chờ 20s, ...
+  await connection.set("test:key", "Hello Upstash!");
+  const val = await connection.get("test:key");
+  console.log("✅ Redis connection OK:", val);
+
+  return new Queue("paymentQueue", {
+    connection,
+    defaultJobOptions: {
+      attempts: 3,
+      backoff: {
+        type: "exponential",
+        delay: 10000,
+      },
+      removeOnComplete: true,
+      removeOnFail: 5,
     },
-    removeOnComplete: true, // auto xóa job thành công
-    removeOnFail: 5, // giữ lại 5 job fail gần nhất để debug
-  },
-});
+  });
+};
+
+export const paymentQueue = await initQueue();

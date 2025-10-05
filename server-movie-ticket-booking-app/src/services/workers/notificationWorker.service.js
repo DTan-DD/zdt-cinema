@@ -1,57 +1,65 @@
 import { Worker } from "bullmq";
-import IORedis from "ioredis";
-import { io } from "../../../socket.js"; // socket.io instance
+import { io } from "../../../socket.js";
 import Notification from "../../models/notification.model.js";
-import { notificationQueue } from "../queues/notificationQueue.service.js";
+import { connectRedis, disconnectRedis } from "../../../configs/redisConnection.js";
 
-const connection = new IORedis(process.env.REDIS_URL || "redis://localhost:6379", {
-  maxRetriesPerRequest: null,
-});
+const startNotificationWorker = async () => {
+  const connection = await connectRedis();
+  console.log("📡 Redis connected for Notification Worker");
 
-const notificationWorker = new Worker(
-  "notificationQueue",
-  async (job) => {
-    console.log(`🔔 Running notificationWorker for job: ${job.name}`);
+  const notificationWorker = new Worker(
+    "notificationQueue",
+    async (job) => {
+      console.log(`🔔 Running notificationWorker for job: ${job.name}`);
 
-    const { notifId, receiverIds, type, title, message, meta } = job.data;
+      const { notifId, receiverIds, type, title, message, meta } = job.data;
 
-    try {
-      // 1. Update trạng thái trong DB
+      // 1️⃣ Cập nhật trạng thái trong DB
       const notification = await Notification.findById(notifId);
       if (!notification) throw new Error("Notification not found");
       notification.status = "SENT";
       await notification.save();
 
-      // 2. Emit qua Socket.IO cho từng user
-      receiverIds.forEach((userId) => {
-        io.to(`user:${userId}`).emit("notification:new", {
-          _id: notification._id,
-          type,
-          title,
-          message,
-          meta,
-          createdAt: notification.createdAt,
+      // 2️⃣ Gửi Socket.IO
+      try {
+        receiverIds.forEach((userId) => {
+          io.to(`user:${userId}`).emit("notification:new", {
+            _id: notification._id,
+            type,
+            title,
+            message,
+            meta,
+            createdAt: notification.createdAt,
+          });
         });
-      });
 
-      console.log(`✅ Notification sent to users: ${receiverIds.join(", ")}`);
-    } catch (err) {
-      console.error(`❌ Notification job failed:`, err.message);
+        console.log(`✅ Notification sent to users: ${receiverIds.join(", ")}`);
+      } catch (err) {
+        console.error(`❌ Notification job failed:`, err.message);
+        notification.status = "FAILED";
+        await notification.save();
+        throw err; // để BullMQ retry
+      }
+    },
+    { connection }
+  );
 
-      // Nếu lưu hoặc emit fail, update trạng thái trong DB
-      notification.status = "FAILED";
-      await notification.save();
+  // 3️⃣ Sự kiện hoàn thành job
+  notificationWorker.on("completed", async (job) => {
+    console.log(`✅ Job ${job.id} completed`);
+    // Đóng Redis connection nếu worker idle
+    await disconnectRedis();
+  });
 
-      throw err; // để BullMQ retry
+  // 4️⃣ Dead Letter Queue (DLQ)
+  notificationWorker.on("failed", async (job, err) => {
+    const maxAttempts = job.opts.attempts ?? 3;
+    if (job.attemptsMade >= maxAttempts) {
+      console.error(`🚨 Job ${job.id} moved to DLQ after ${job.attemptsMade} attempts`);
     }
-  },
-  { connection }
-);
+  });
+};
 
-// DEAD LETTER: khi job fail vượt quá attempts
-notificationWorker.on("failed", async (job, err) => {
-  const maxAttempts = job.opts.attempts ?? 2; // fallback từ defaultJobOptions
-  if (job.attemptsMade >= maxAttempts) {
-    console.error(`🚨 Notification job ${job.id} moved to DLQ after ${job.attemptsMade} attempts`);
-  }
+startNotificationWorker().catch((err) => {
+  console.error("❌ Worker init failed:", err);
 });
