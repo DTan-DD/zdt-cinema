@@ -1,9 +1,10 @@
 import { Inngest } from "inngest";
-import User from "../models/User.js";
+import User from "../models/user.model.js";
 import { db } from "../../dbs/init.mongodb.js";
-import Show from "../models/Show.js";
-import Booking from "../models/Booking.js";
-import sendEmail from "../../configs/nodeMailer.js";
+import Show from "../models/show.model.js";
+import Booking from "../models/booking.model.js";
+import sendEmail from "../../configs/nodeMailer.config.js";
+import PaymentLog from "../models/paymentLog.model.js";
 
 // Create a client to send and receive events
 export const inngest = new Inngest({ id: "movie-ticket-booking" });
@@ -35,7 +36,6 @@ const syncUserDeletion = inngest.createFunction(
 
     try {
       const { id } = event.data;
-      console.log(id);
       await User.findByIdAndDelete(id);
       return { status: "deleted", id };
     } catch (err) {
@@ -63,9 +63,9 @@ const syncUserUpdation = inngest.createFunction(
   }
 );
 
-// Inngest Function to cancel booking and release seats of show after 10 minutes of booking created if payment is not made
+// Inngest Function to cancel booking and release seats of show after 30 minutes of booking created if payment is not made
 const releaseSeatsAndDeleteBooking = inngest.createFunction({ id: "release-seats-and-delete-booking" }, { event: "app/checkpayment" }, async ({ event, step }) => {
-  const tenMinutesLater = new Date(Date.now() + 3 * 60 * 1000);
+  const tenMinutesLater = new Date(Date.now() + 5 * 60 * 1000);
   await step.sleepUntil("wait-for-10-minutes", tenMinutesLater);
 
   await step.run("check-payment-status", async () => {
@@ -80,7 +80,10 @@ const releaseSeatsAndDeleteBooking = inngest.createFunction({ id: "release-seats
       });
       show.markModified("occupiedSeats");
       await show.save();
-      await Booking.findByIdAndDelete(bookingId);
+      booking.isDeleted = true;
+      await booking.save();
+      // await Booking.findByIdAndDelete(bookingId);
+      // await PaymentLog.findOneAndDelete({ bookingId: bookingId });
     }
   });
 });
@@ -119,7 +122,7 @@ const sendBookingConfirmationEmail = inngest.createFunction({ id: "send-booking-
       <p>Enjoy the show! 🍿</p>
       <p>
         Thanks for booking with us!<br/>
-        — ZT Cinema Team
+        — DiTi Cinema Team
       </p>
     </div>
   `,
@@ -193,7 +196,7 @@ const sendShowReminders = inngest.createFunction(
               <p>It starts in approximately <strong>8 hours</strong> - make sure you're ready to be there!</p>
               <p>
                 Enjoy the show!<br/>
-                — ZT Cinema Team
+                — DiTi Cinema Team
               </p>
             </div>`,
           });
@@ -227,7 +230,7 @@ const sendNewShowNotifications = inngest.createFunction({ id: "send-new-show-not
           <br/>
           <p>
             Enjoy the show!<br/>
-            — ZT Cinema Team
+            — DiTi Cinema Team
           </p>
       `;
     await sendEmail({

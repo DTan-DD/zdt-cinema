@@ -3,7 +3,7 @@
 import mongoose from "mongoose";
 import { countConnect } from "../helpers/check.connect.js";
 
-const connectString = `${process.env.MONGOD_URI}/movie-ticket-booking-app`;
+const connectString = `${process.env.MONGOD_URI}/movie-ticket-booking-app?retryWrites=true&w=majority`;
 
 class Database {
   constructor() {

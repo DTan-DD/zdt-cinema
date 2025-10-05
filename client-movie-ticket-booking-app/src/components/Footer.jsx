@@ -8,7 +8,8 @@ const Footer = () => {
         <div className="md:max-w-96">
           <img alt="" className="w-36 h-auto" src={assets.logo} />
           <p className="mt-6 text-sm">
-            Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+            🎬 DiTi Cinema là hệ thống rạp chiếu phim hiện đại, được phát triển với mục tiêu mang đến trải nghiệm giải trí đẳng cấp và tiện lợi cho người dùng. Hiện tại, DiTi Cinema có các chi nhánh
+            trải dài khắp TP. Hồ Chí Minh, bao gồm Quận 1, Quận 3, Quận 7, Thủ Đức và Bình Thạnh — giúp khán giả dễ dàng lựa chọn rạp gần nhất để thưởng thức những bộ phim mới nhất.
           </p>
           <div className="flex items-center gap-2 mt-4">
             <img src={assets.googlePlay} alt="google play" className="h-9 w-auto" />
@@ -17,27 +18,27 @@ const Footer = () => {
         </div>
         <div className="flex-1 flex items-start md:justify-end gap-20 md:gap-40">
           <div>
-            <h2 className="font-semibold mb-5">Company</h2>
+            <h2 className="font-semibold mb-5 text-white">Company</h2>
             <ul className="text-sm space-y-2">
               <li>
-                <a href="#">Home</a>
+                <a href="#">Trang chủ</a>
               </li>
               <li>
-                <a href="#">About us</a>
+                <a href="#">Giới thiệu</a>
               </li>
               <li>
-                <a href="#">Contact us</a>
+                <a href="#">Liên hệ</a>
               </li>
               <li>
-                <a href="#">Privacy policy</a>
+                <a href="#">Chính sách và điều khoản</a>
               </li>
             </ul>
           </div>
           <div>
-            <h2 className="font-semibold mb-5">Get in touch</h2>
+            <h2 className="font-semibold mb-5 text-white">Get in touch</h2>
             <div className="text-sm space-y-2">
               <p>+1-234-567-890</p>
-              <p>contact@example.com</p>
+              <p>tan.ddd03979@gmail.com</p>
             </div>
           </div>
         </div>

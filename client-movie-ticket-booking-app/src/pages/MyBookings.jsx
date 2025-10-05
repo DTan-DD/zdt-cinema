@@ -5,6 +5,9 @@ import timeFormat from "../lib/timeFormat";
 import dateFormat from "../lib/dateFormat";
 import { useAppContext } from "../context/AppContext";
 import { Link } from "react-router-dom";
+import CheckoutModal from "../components/CheckoutModal";
+import BookingDetailsModal from "../components/BookingDetailsModal";
+import { toast } from "react-hot-toast";
 
 const MyBookings = () => {
   const currency = import.meta.env.VITE_CURRENCY;
@@ -12,20 +15,99 @@ const MyBookings = () => {
 
   const [bookings, setBookings] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState(null);
+  const [isBookingLoading, setIsBookingLoading] = useState(false);
 
   const getMyBookings = async () => {
     try {
       const { data } = await axios.get("/v1/api/users/bookings", {
         headers: { Authorization: `Bearer ${await getToken()}` },
       });
-      // console.log(data);
       if (data.success) {
-        setBookings(data.bookings);
+        setBookings(data.metadata.bookings);
       }
     } catch (error) {
       console.error("Error fetching bookings: ", error);
     }
     setIsLoading(false);
+  };
+
+  const openCheckout = (booking) => {
+    if (!user) {
+      return toast.error("Vui lòng đăng nhập để đặt vé");
+    }
+
+    setSelectedBooking(booking);
+    setIsCheckoutOpen(true);
+  };
+
+  const openDetails = (booking) => {
+    setSelectedBooking(booking);
+    setIsDetailsOpen(true);
+  };
+
+  const cancelBooking = async () => {
+    try {
+      const { data } = await axios.post(
+        `/v1/api/bookings/cancel/${selectedBooking._id}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${await getToken()}` },
+        }
+      );
+      if (data.success) {
+        setIsCheckoutOpen(false);
+        toast.success(data.metadata.message);
+        getMyBookings();
+      } else {
+        setIsCheckoutOpen(false);
+        toast.error(data.metadata.message);
+      }
+    } catch (error) {
+      console.error("Error booking tickets: ", error);
+    }
+  };
+
+  const payTickets = async (paymentMethod) => {
+    try {
+      setIsBookingLoading(true);
+
+      if (!user) {
+        toast.error("Please login to book tickets");
+        return;
+      }
+
+      if (!paymentMethod) {
+        toast.error("Please select payment method");
+        return;
+      }
+
+      const { data } = await axios.post(
+        `/v1/api/bookings/payment/`,
+        {
+          paymentMethod: paymentMethod, // Include payment method in request
+          bookingId: selectedBooking._id,
+        },
+        {
+          headers: { Authorization: `Bearer ${await getToken()}` },
+        }
+      );
+
+      if (data.success) {
+        setIsCheckoutOpen(false);
+        // toast.success(data.metadata.message);
+        window.location.href = data.metadata.redirectUrl;
+      } else {
+        toast.error("Something went wrong");
+      }
+    } catch (error) {
+      console.error("Error booking tickets: ", error);
+      toast.error("Có lỗi xảy ra khi thanh toán");
+    } finally {
+      setIsBookingLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -62,39 +144,70 @@ const MyBookings = () => {
             </div>
           </div>
 
-          <div className="flex flex-col md:items-end md:text-right justify-between p-4">
-            <div className="flex items-center gap-4">
+          <div className="flex flex-col md:items-end md:text-right justify-between p-4 w-3/10">
+            <div className="text-sm">
               <p className="text-2xl font-semibold mb-3">
                 {item.amount}
                 {currency}
               </p>
-              {!item.isPaid && (
-                <Link
-                  to={item.paymentLink}
-                  className="bg-primary px-4 py-1.5 mb-3 text-sm rounded-full
-              font-medium cursor-pointer"
-                >
-                  Pay now
-                </Link>
-              )}
-            </div>
-            <div className="text-sm">
-              <p>
-                <span className="text-gray-400">Total Tickets: </span>
+              {/* <p>
+                <span className="text-gray-400">Tổng số vé: </span>
                 {item.bookedSeats.length}
-              </p>
+              </p> */}
               <p>
-                <span className="text-gray-400">Seat number: </span>
+                <span className="text-gray-400">Số ghế: </span>
                 {item.bookedSeats.join(", ")}
               </p>
               <p className={item.isPaid ? "text-green-500" : "text-red-500"}>
                 <span className="text-gray-400">Trạng thái: </span>
                 {item.isPaid ? "Đã thanh toán" : "Chưa thanh toán"}
               </p>
+              {/* {item.isPaid && item.paymentMethod && (
+                <p className="text-blue-500">
+                  <span className="text-gray-400">Phương thức: </span>
+                  {item.paymentMethod.charAt(0).toUpperCase() + item.paymentMethod.slice(1)}
+                </p>
+              )} */}
+            </div>
+            <div className="flex items-center gap-4">
+              {!item.isPaid ? (
+                <button
+                  onClick={() => openCheckout(item)}
+                  className="bg-primary px-4 py-1.5 mb-3 text-sm rounded-full
+              font-medium cursor-pointer text-white hover:bg-primary-dull transition-colors"
+                >
+                  Thanh toán
+                </button>
+              ) : (
+                <button
+                  onClick={() => openDetails(item)}
+                  className="bg-green-500 px-4 py-1.5 mt-3 text-sm rounded-full
+              font-medium cursor-pointer text-white hover:bg-green-600 transition-colors"
+                >
+                  Chi tiết
+                </button>
+              )}
             </div>
           </div>
         </div>
       ))}
+
+      {/* Checkout Modal for unpaid bookings */}
+      <CheckoutModal
+        isOpen={isCheckoutOpen}
+        onClose={() => setIsCheckoutOpen(false)}
+        show={selectedBooking?.show}
+        selectedSeats={selectedBooking?.bookedSeats}
+        onConfirmBooking={(paymentMethod) => {
+          payTickets(paymentMethod);
+        }}
+        onCancelBooking={() => cancelBooking()}
+        image_base_url={image_base_url}
+        isLoading={isBookingLoading}
+      />
+
+      {/* Details Modal for paid bookings */}
+      <BookingDetailsModal isOpen={isDetailsOpen} onClose={() => setIsDetailsOpen(false)} booking={selectedBooking} image_base_url={image_base_url} />
     </div>
   ) : (
     <Loading />

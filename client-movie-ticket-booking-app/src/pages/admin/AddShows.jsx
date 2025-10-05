@@ -24,14 +24,15 @@ const AddShows = () => {
 
   const fetchNowPlayingMovies = async () => {
     try {
-      const { data } = await axios.get("/v1/api/shows/now-playing", {
+      // const { data } = await axios.get("/v1/api/shows/now-playing", {
+      const { data } = await axios.get("/v1/api/shows/movies", {
         headers: { Authorization: `Bearer ${await getToken()}` },
       });
       if (data.success) {
-        setNowPlayingMovies(data.movies);
+        setNowPlayingMovies(data.metadata.movies);
       }
     } catch (error) {
-      console.error("Error fetching movies: ", error);
+      toast.error("Có lỗi xảy ra khi tải danh sách phim");
     }
   };
 
@@ -39,7 +40,7 @@ const AddShows = () => {
     try {
       const { data } = await axios.get("/v1/api/cinemas/all");
       if (data.success) {
-        setCinemas(data.cinemas);
+        setCinemas(data.metadata.cinemas);
       }
     } catch (error) {
       console.error("Error fetching cinemas: ", error);
@@ -133,8 +134,6 @@ const AddShows = () => {
         cinemasInput,
       };
 
-      console.log("Sending payload:", payload);
-
       const { data } = await axios.post("/v1/api/shows/add", payload, {
         headers: { Authorization: `Bearer ${await getToken()}` },
       });
@@ -175,10 +174,10 @@ const AddShows = () => {
         <div className="group flex flex-wrap gap-4 mt-4 w-max">
           {nowPlayingMovies.map((movie) => (
             <div
-              key={movie.id}
+              key={movie._id}
               className="max-w-40 relative cursor-pointer group-hover:not-hover:opacity-40 
             hover:-translate-y-1 transition duration-300"
-              onClick={() => setSelectedMovie(movie.id)}
+              onClick={() => setSelectedMovie(movie._id)}
             >
               <div className="relative rounded-lg overflow-hidden">
                 <img src={image_base_url + movie.poster_path} alt="" className="brightness-90 object-cover w-full" />
@@ -193,7 +192,7 @@ const AddShows = () => {
                   <p className="text-gray-300">{kConverter(movie.vote_count)} Votes</p>
                 </div>
               </div>
-              {selectedMovie === movie.id && (
+              {selectedMovie === movie._id && (
                 <div className="absolute top-2 left-2 flex items-center justify-center w-6 h-6 rounded bg-primary">
                   <CheckIcon className="w-4 h-4 text-white" strokeWidth={2.5} />
                 </div>
@@ -223,10 +222,16 @@ const AddShows = () => {
 
           <div className="space-y-3">
             {/* Cinema Dropdown */}
-            <select className="w-full md:w-auto border border-gray-600 rounded-lg px-3 py-2 outline-none bg-transparent" value={selectedCinema} onChange={(e) => setSelectedCinema(e.target.value)}>
-              <option value="">Select a cinema</option>
+            <select
+              className="w-full md:w-auto border border-gray-600  text-white rounded-lg px-3 py-2 outline-none bg-transparent"
+              value={selectedCinema}
+              onChange={(e) => setSelectedCinema(e.target.value)}
+            >
+              <option value="" className="bg-transparent text-black" disabled>
+                Select a cinema
+              </option>
               {cinemas.map((c) => (
-                <option key={c._id} value={c._id}>
+                <option key={c._id} value={c._id} className="bg-transparent text-black">
                   {c.name}
                 </option>
               ))}
@@ -293,7 +298,7 @@ const AddShows = () => {
         <div className="mt-6 p-4 bg-gray-800/50 rounded-lg">
           <h3 className="font-medium mb-2">Summary</h3>
           <div className="text-sm space-y-1 text-gray-300">
-            <p>Movie: {nowPlayingMovies.find((m) => m.id === selectedMovie)?.title}</p>
+            <p>Movie: {nowPlayingMovies.find((m) => m._id === selectedMovie)?.title}</p>
             <p>
               Price: {currency} {showPrice}
             </p>

@@ -4,10 +4,10 @@ import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  base: "/", // hoặc base: "https://11ee3a738470.ngrok-free.app/"
   server: {
-    host: "0.0.0.0", // mở cho tất cả IP
+    host: "0.0.0.0",
     port: 5173,
-    strictPort: true,
-    origin: "https://11ee3a738470.ngrok-free.app", // chèn đúng link ngrok
+    // origin: "https://2b9f4f6289a1.ngrok-free.app",
   },
 });

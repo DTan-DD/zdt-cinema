@@ -1,5 +1,5 @@
 const dateFormat = (date) => {
-  return new Date(date).toLocaleString("en-US", {
+  return new Date(date).toLocaleString("vi-VN", {
     weekday: "short",
     month: "long",
     day: "numeric",

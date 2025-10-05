@@ -9,7 +9,6 @@ const DateSelect = ({ dateTime, id }) => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedShow, setSelectedShow] = useState(null);
   const [currentDateIndex, setCurrentDateIndex] = useState(0);
-  // console.log(dateTime, id);
   const onBookHandler = () => {
     if (!selectedShow) {
       return toast("Please select showtime!");
@@ -18,13 +17,32 @@ const DateSelect = ({ dateTime, id }) => {
     scrollTo(0, 0);
   };
 
-  useEffect(() => {
-    console.log(selectedDate, selectedShow);
-  }, [selectedDate, selectedShow]);
+  useEffect(() => {}, [selectedDate, selectedShow]);
+
+  function useVisibleDates() {
+    const [visible, setVisible] = useState(5);
+
+    useEffect(() => {
+      function handleResize() {
+        if (window.innerWidth < 640) {
+          setVisible(2); // mobile
+        } else if (window.innerWidth < 1024) {
+          setVisible(3); // tablet
+        } else {
+          setVisible(5); // desktop
+        }
+      }
+      handleResize();
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    return visible;
+  }
 
   // Get sorted dates array
   const sortedDates = Object.keys(dateTime).sort((a, b) => new Date(a) - new Date(b));
-  const visibleDates = 5; // Number of dates to show at once
+  const visibleDates = useVisibleDates(); // Number of dates to show at once
 
   // Navigation handlers for date slider
   const handlePrevDates = () => {
@@ -86,9 +104,9 @@ const DateSelect = ({ dateTime, id }) => {
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-semibold text-gray-200 flex items-center gap-2">
                   <CalendarIcon className="w-5 h-5 text-primary" />
-                  Choose Date
+                  Chọn ngày chiếu
                 </h3>
-                <div className="text-sm text-gray-100">{sortedDates.length} days available</div>
+                <div className="text-sm text-gray-100">Hiện có {sortedDates.length} ngày</div>
               </div>
 
               <div className="relative">
@@ -106,7 +124,7 @@ const DateSelect = ({ dateTime, id }) => {
 
                   {/* Date Grid */}
                   <div className="flex-1 overflow-hidden">
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                    <div className="grid grid-cols-2 grid-rows-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                       {getVisibleDates().map((date) => {
                         const dateInfo = formatDateDisplay(date);
                         return (
@@ -160,7 +178,7 @@ const DateSelect = ({ dateTime, id }) => {
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg font-semibold text-gray-200 flex items-center gap-2">
                     <BuildingIcon className="w-5 h-5 text-primary" />
-                    Choose Cinema & Showtime
+                    Hãy chọn rạp và suất chiếu
                   </h3>
                   <div className="text-sm text-gray-100">
                     {formatDateDisplay(selectedDate).label}, {formatDateDisplay(selectedDate).month} {formatDateDisplay(selectedDate).date}
@@ -176,7 +194,7 @@ const DateSelect = ({ dateTime, id }) => {
                           <div>
                             <h4 className="font-semibold text-gray-800 mb-1">{cinema.cinemaName}</h4>
                             <p className="text-sm text-gray-600">
-                              {showInfo.totalShows} showtimes available
+                              Hiện có {showInfo.totalShows} suất chiếu
                               {showInfo.availableShows !== showInfo.totalShows && <span className="text-orange-600 ml-2">• {showInfo.totalShows - showInfo.availableShows} filling fast</span>}
                             </p>
                           </div>
@@ -248,12 +266,12 @@ const DateSelect = ({ dateTime, id }) => {
                   {selectedDate && selectedShow ? (
                     <div className="flex items-center gap-2">
                       <CheckCircleIcon className="w-4 h-4 text-green-500" />
-                      Ready to book your tickets
+                      Sẵn sàng để đặt vé
                     </div>
                   ) : (
                     <div className="flex items-center gap-2">
                       <InfoIcon className="w-4 h-4 text-gray-200" />
-                      Please select date and showtime
+                      Hãy chọn suất chiếu bạn yêu thích
                     </div>
                   )}
                 </div>
@@ -267,7 +285,7 @@ const DateSelect = ({ dateTime, id }) => {
                 >
                   <div className="flex items-center gap-2">
                     <TicketIcon className="w-5 h-5" />
-                    Book Now
+                    Đặt vé ngay
                   </div>
                 </button>
               </div>
