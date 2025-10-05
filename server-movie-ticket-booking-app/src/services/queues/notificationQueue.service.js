@@ -5,7 +5,8 @@ import IORedis from "ioredis";
 const connection = new IORedis(process.env.REDIS_URL || "redis://localhost:6379", {
   maxRetriesPerRequest: null, // ✅ bắt buộc cho BullMQ
 });
-
+connection.set("test:key", "Hello Upstash!");
+connection.get("test:key").then(console.log);
 // 🔔 Queue chuyên cho Notification
 export const notificationQueue = new Queue("notificationQueue", {
   connection,
