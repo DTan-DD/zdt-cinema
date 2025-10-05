@@ -23,7 +23,7 @@ import "./services/workers/updateBookingWorker.service.js";
 import queueDashboard from "./routes/queue.routes.js";
 import "./services/workers/sendEmailWorker.service.js";
 import movieRouter from "./routes/movie.routes.js";
-import { rateLimitMiddleware } from "./middleware/rateLimit.middleware.js";
+// import { rateLimitMiddleware } from "./middleware/rateLimit.middleware.js";
 import notificationRouter from "./routes/notification.routes.js";
 import "./services/workers/notificationWorker.service.js";
 
@@ -59,7 +59,7 @@ app.use((req, res, next) => {
 })();
 
 // Middleware
-app.use("/v1/api/", rateLimitMiddleware);
+// app.use("/v1/api/", rateLimitMiddleware);
 
 // API Routes
 app.get("/", (req, res) => res.send("Server is Live"));
