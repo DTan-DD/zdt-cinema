@@ -24,7 +24,7 @@ export const updateBooking = async ({ bookingLogId }) => {
     log.steps.updateBooking.status = "SUCCESS";
 
     // Send Confirmation Email
-    inngest.send({ name: "app/show.booked", data: { bookingId: booking._id } });
+    await inngest.send({ name: "app/show.booked", data: { bookingId: booking._id } });
     log.steps.sendMail.status = "SUCCESS";
     log.status = "SUCCESS";
     await log.save();

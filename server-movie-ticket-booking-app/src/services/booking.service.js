@@ -10,6 +10,7 @@ import { createZalopayPayment } from "./payments/paymentZalopay.service.js";
 import PaymentLog from "../models/paymentLog.model.js";
 import { createNotification } from "./notification.service.js";
 import { getAdmins } from "../utils/index.js";
+import { inngest } from "../inngest/index.js";
 
 export const createBookingV2 = async (req) => {
   // Bắt đầu session cho transaction
@@ -93,6 +94,9 @@ export const createBookingV2 = async (req) => {
     // Cập nhật payment link
     booking.paymentLink = paymentLink;
     await booking.save();
+
+    // Run Inngest Schedule Func to check payment status
+    await inngest.send({ name: "app/checkpayment", data: { bookingId: booking._id.toString() } });
 
     // Tạo notification
     const admins = await getAdmins();
