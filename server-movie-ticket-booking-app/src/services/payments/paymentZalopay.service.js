@@ -6,6 +6,7 @@ import Booking from "../../models/booking.model.js";
 import PaymentLog from "../../models/paymentLog.model.js";
 import { paymentQueue } from "../queues/paymentQueue.service.js";
 import { BadRequestError } from "../../core/error.response.js";
+import { updateBooking } from "../updateBooking.service.js";
 
 /**
  * Tạo đơn hàng trên ZaloPay
@@ -90,9 +91,13 @@ export async function zalopayCallbackService(dataStr, reqMac) {
       await paymentLog.save();
     }
 
+    await updateBooking({ bookingLogId: paymentLog._id });
+
+    /*  code queue
     // Push vào queue
     await paymentQueue.add("updateBooking", { logId: paymentLog._id });
     console.log("✅ Pushed updateBooking to queue");
+    */
     return { return_code: 1, return_message: "queued" };
   } catch (error) {
     console.error(error);

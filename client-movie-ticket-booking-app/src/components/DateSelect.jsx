@@ -71,9 +71,9 @@ const DateSelect = ({ dateTime, id }) => {
       return { label: "Tomorrow", date: date.getDate(), month: date.toLocaleDateString("en-US", { month: "short" }) };
     } else {
       return {
-        label: date.toLocaleDateString("en-US", { weekday: "short" }),
+        label: date.toLocaleDateString("vi-VN", { weekday: "short" }),
         date: date.getDate(),
-        month: date.toLocaleDateString("en-US", { month: "short" }),
+        month: date.toLocaleDateString("vi-VN", { month: "short" }),
       };
     }
   };
@@ -94,8 +94,8 @@ const DateSelect = ({ dateTime, id }) => {
 
           {/* Header */}
           <div className="bg-gradient-to-r from-primary/5 to-primary/10 p-6 border-b border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-200 mb-2">Select Your Show</h2>
-            <p className="text-gray-200">Choose your preferred date and showtime</p>
+            <h2 className="text-2xl font-bold text-gray-200 mb-2">Chọn suất chiếu</h2>
+            <p className="text-gray-200">Hãy chọn ngày và giờ yêu thích của bạn</p>
           </div>
 
           <div className="p-6 lg:p-8">
@@ -193,9 +193,9 @@ const DateSelect = ({ dateTime, id }) => {
                         <div className="flex items-center justify-between mb-4">
                           <div>
                             <h4 className="font-semibold text-gray-800 mb-1">{cinema.cinemaName}</h4>
-                            <p className="text-sm text-gray-600">
+                            <p className="text-sm text-orange-600">
                               Hiện có {showInfo.totalShows} suất chiếu
-                              {showInfo.availableShows !== showInfo.totalShows && <span className="text-orange-600 ml-2">• {showInfo.totalShows - showInfo.availableShows} filling fast</span>}
+                              {/* {showInfo.availableShows !== showInfo.totalShows && <span className="text-orange-600 ml-2">• {showInfo.totalShows - showInfo.availableShows} filling fast</span>} */}
                             </p>
                           </div>
                           <div className="text-right">

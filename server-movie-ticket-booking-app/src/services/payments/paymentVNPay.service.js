@@ -4,6 +4,7 @@ import moment from "moment";
 import { sortObject } from "../../utils/VNPay.js";
 import { paymentQueue } from "../queues/paymentQueue.service.js";
 import PaymentLog from "../../models/paymentLog.model.js";
+import { updateBooking } from "../updateBooking.service.js";
 
 export async function createVNPayPayment({ orderId, amount, req, originUrl }) {
   process.env.TZ = "Asia/Ho_Chi_Minh";
@@ -99,9 +100,13 @@ export const vnpayCallbackService = async (req, res) => {
       await paymentLog.save();
     }
 
+    await updateBooking({ bookingLogId: paymentLog._id });
+
+    /*
     // Push vào queue
     await paymentQueue.add("updateBooking", { logId: paymentLog._id });
     console.log("✅ Pushed updateBooking to queue");
+    */
 
     return { RspCode: "00", Message: "Confirm Success" };
   } catch (error) {
