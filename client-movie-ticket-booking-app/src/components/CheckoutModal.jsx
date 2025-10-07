@@ -34,7 +34,7 @@ const CheckoutModal = ({ isOpen, onClose, show, selectedSeats, onConfirmBooking,
       name: "ZaloPay",
       icon: Wallet,
       color: "bg-blue-500",
-      description: "Thanh toán qua ví ZaloPay",
+      description: "Thanh toán qua ZaloPay",
     },
     {
       id: "vnpay",
@@ -77,12 +77,12 @@ const CheckoutModal = ({ isOpen, onClose, show, selectedSeats, onConfirmBooking,
           </button>
         </div>
 
-        <div className="p-6">
+        <div className="p-3 md:p-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Left Column - Movie & Show Info */}
             <div className="space-y-6">
               {/* Movie Info */}
-              <div className="bg-gray-50 rounded-xl p-6">
+              <div className="bg-gray-50 rounded-xl p-4 md:p-6">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
                   <Film className="w-5 h-5" />
                   Thông tin phim
@@ -110,7 +110,7 @@ const CheckoutModal = ({ isOpen, onClose, show, selectedSeats, onConfirmBooking,
               </div>
 
               {/* Selected Seats */}
-              <div className="bg-blue-50 rounded-xl p-6">
+              <div className="bg-blue-50 rounded-xl p-3 md:p-6">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
                   <Ticket className="w-5 h-5" />
                   Ghế đã chọn ({selectedSeats?.length} ghế)
@@ -139,7 +139,7 @@ const CheckoutModal = ({ isOpen, onClose, show, selectedSeats, onConfirmBooking,
 
               {/* User Info */}
               {user && (
-                <div className="bg-green-50 rounded-xl p-6">
+                <div className="bg-green-50 rounded-xl p-3 md:p-6">
                   <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
                     <User className="w-5 h-5" />
                     Thông tin khách hàng
@@ -175,8 +175,8 @@ const CheckoutModal = ({ isOpen, onClose, show, selectedSeats, onConfirmBooking,
                 </>
               )}
 
-              <div className="bg-yellow-50 rounded-xl p-6">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <div className="bg-yellow-50 rounded-xl p-3 md:p-6">
+                <h3 className="text-sm md:text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
                   <CreditCard className="w-5 h-5" />
                   Chọn phương thức thanh toán
                 </h3>
@@ -213,19 +213,20 @@ const CheckoutModal = ({ isOpen, onClose, show, selectedSeats, onConfirmBooking,
 
                 {/* Security Note */}
                 <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                  <p className="text-xs text-gray-600 text-center">🔒 Thanh toán của bạn được bảo mật bằng công nghệ mã hóa SSL 256-bit</p>
+                  {/* <p className="text-xs text-gray-600 text-center">🔒 Thanh toán của bạn được bảo mật bằng công nghệ mã hóa SSL 256-bit</p> */}
+                  <p className="text-xs text-red-600 text-center">🔒 Lưu ý: Đây là mô phỏng thanh toán, vui lòng không thanh toán bằng tiền thật </p>
                 </div>
               </div>
 
               {/* Action Buttons */}
               <div className="flex  gap-4">
-                <button onClick={onClose} className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium">
+                <button onClick={onClose} className="text-sm md:text-base flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium">
                   Hủy bỏ
                 </button>
                 <button
                   onClick={handleConfirmBooking}
                   disabled={!selectedPaymentMethod || isLoading}
-                  className={`flex-1 px-6 py-3 rounded-xl font-medium transition-all duration-200 ${
+                  className={`text-sm md:text-base flex-1 px-6 py-3 rounded-xl font-medium transition-all duration-200 ${
                     selectedPaymentMethod && !isLoading ? "bg-primary text-white hover:bg-primary-dull shadow-lg hover:shadow-xl" : "bg-gray-300 text-gray-500 cursor-not-allowed"
                   }`}
                 >

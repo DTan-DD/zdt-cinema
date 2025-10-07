@@ -89,8 +89,8 @@ const HeroCarousel = ({ shows = [], image_base_url }) => {
         <div className="flex flex-wrap items-center gap-4 mt-18 md:mt-4">
           <button
             onClick={() => navigate(`/movies/${currentShow._id}`)}
-            className="flex items-center gap-3 px-6 py-4 bg-primary hover:bg-primary-dull 
-                     transition-all duration-300 rounded-full font-semibold text-md md:text-lg
+            className="flex items-center gap-3 px-4 md:px-6 py-4 bg-primary hover:bg-primary-dull 
+                     transition-all duration-300 rounded-full font-semibold text-sm md:text-lg
                      shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95"
           >
             <Play className="w-6 h-6" />
@@ -99,8 +99,8 @@ const HeroCarousel = ({ shows = [], image_base_url }) => {
 
           <button
             onClick={() => navigate("/movies")}
-            className="flex items-center gap-2 px-8 py-4 bg-white/20 backdrop-blur-md
-                     hover:bg-white/30 transition-all duration-300 rounded-full font-semibold text-md md:text-lg
+            className="flex items-center gap-2 px-4 md:px-8 py-4 bg-white/20 backdrop-blur-md
+                     hover:bg-white/30 transition-all duration-300 rounded-full font-semibold text-sm md:text-lg
                      border border-white/30 hover:border-white/50 text-white"
           >
             Xem thêm
@@ -114,7 +114,7 @@ const HeroCarousel = ({ shows = [], image_base_url }) => {
         <>
           <button
             onClick={goToPrevious}
-            className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-20
+            className="absolute left-4 md:left-8 top-4/5 md:top-1/2 -translate-y-1/2 z-20
                      p-3 bg-transparent hover:bg-black/70 backdrop-blur-sm rounded-full
                      text-white transition-all duration-300 hover:scale-110"
           >
@@ -123,7 +123,7 @@ const HeroCarousel = ({ shows = [], image_base_url }) => {
 
           <button
             onClick={goToNext}
-            className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-20
+            className="absolute right-4 md:right-8 top-4/5 md:top-1/2 -translate-y-1/2 z-20
                      p-3 bg-transparent hover:bg-black/70 backdrop-blur-sm rounded-full
                      text-white transition-all duration-300 hover:scale-110"
           >
@@ -139,7 +139,7 @@ const HeroCarousel = ({ shows = [], image_base_url }) => {
             <button
               key={index}
               onClick={() => goToSlide(index)}
-              className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentIndex ? "bg-primary scale-125" : "bg-white/50 hover:bg-white/70"}`}
+              className={`w-2 h-2 md:w-3 md:h-3 rounded-full transition-all duration-300 ${index === currentIndex ? "bg-primary scale-125" : "bg-white/50 hover:bg-white/70"}`}
             />
           ))}
         </div>

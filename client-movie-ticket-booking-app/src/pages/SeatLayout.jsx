@@ -24,10 +24,10 @@ const SeatLayout = () => {
 
   const handleSeatClick = (seatId) => {
     if (!selectedSeats.includes(seatId) && selectedSeats.length > 4) {
-      return toast("You can only select 5 seats!");
+      return toast("Bạn chỉ được tối đa 5 ghế!");
     }
     if (occupiedSeats.includes(seatId)) {
-      return toast("This seat is already booked!");
+      return toast("Ghế này đã được đặt!");
     }
     setSelectedSeats((pre) => (pre.includes(seatId) ? pre.filter((seat) => seat !== seatId) : [...pre, seatId]));
   };
@@ -73,17 +73,17 @@ const SeatLayout = () => {
       setIsBookingLoading(true);
 
       if (!user) {
-        toast.error("Please login to book tickets");
+        toast.error("Vui lòng đăng nhập để đặt vé!");
         return;
       }
 
       if (!selectedSeats.length) {
-        toast.error("Please select seats");
+        toast.error("Vui lòng chọn ghế!");
         return;
       }
 
       if (!paymentMethod) {
-        toast.error("Please select payment method");
+        toast.error("Xin hãy chọn phương thức thanh toán!");
         return;
       }
 
@@ -108,7 +108,7 @@ const SeatLayout = () => {
         setIsCheckoutOpen(false);
         window.location.href = rsData.redirectUrl;
       } else {
-        toast.error("Something went wrong");
+        toast.error("Có lỗi xảy ra khi đặt vé! Vui lòng thử lại sau!");
       }
     } catch (error) {
       console.error("Error booking tickets: ", error);

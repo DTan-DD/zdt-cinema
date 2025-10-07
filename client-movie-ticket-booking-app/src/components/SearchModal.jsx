@@ -22,6 +22,7 @@ const SearchModal = ({ isOpen, onClose }) => {
     if (e.key === "Enter" && searchQuery.trim()) {
       navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
       closeModal();
+      scrollTo(0, 0);
     }
   };
 

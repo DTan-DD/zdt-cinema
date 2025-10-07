@@ -123,13 +123,14 @@ const AddMovies = () => {
       });
 
       if (data.success) {
-        toast.success(data.message);
+        toast.success("Thêm phim thành công");
         // Reset form
         setSelectedMovie(null);
         setCinemaShowsData({});
         setShowPrice("");
         setSelectedCinema("");
         setDateTimeInput("");
+        fetchNowPlayingMovies();
       } else {
         toast.error(data.message);
       }

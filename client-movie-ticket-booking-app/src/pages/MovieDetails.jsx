@@ -8,12 +8,14 @@ import MovieCard from "../components/MovieCard";
 import Loading from "../components/Loading";
 import { useAppContext } from "../context/AppContext";
 import toast from "react-hot-toast";
+import { motion, AnimatePresence } from "framer-motion";
 
 const MovieDetails = ({ isReleased = true }) => {
   const navigate = useNavigate();
   const { id, status } = useParams();
   const [show, setShow] = useState(null);
   const [showTrailer, setShowTrailer] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const { axios, getToken, user, image_base_url, shows, favoriteMovies, fetchFavoriteMovies } = useAppContext();
   if (status === "upcoming") isReleased = false;
 
@@ -59,10 +61,14 @@ const MovieDetails = ({ isReleased = true }) => {
   };
 
   const videoId = getYouTubeVideoId(show?.movie?.trailer);
-
+  const isLongText = show?.movie?.overview.length > 500;
   const toggleTrailer = () => {
     setShowTrailer(!showTrailer);
   };
+
+  useEffect(() => {
+    setExpanded(false);
+  }, [id]);
 
   useEffect(() => {
     getShow();
@@ -71,7 +77,7 @@ const MovieDetails = ({ isReleased = true }) => {
   return show ? (
     <div className="px-6 md:px-16 lg:px-40 pt-30 md:pt-50">
       <div className="flex flex-col gap-8 max-w-6xl md:flex-row mx-auto">
-        <img src={image_base_url + show.movie.poster_path} alt={show.movie.title} className="max-md:mx-auto rounded-xl h-104 max-w-70 object-cover" />
+        <img src={image_base_url + show.movie.poster_path} alt={show.movie.title} className="max-md:mx-auto rounded-xl h-104 max-w-76 object-cover" />
 
         <div className="relative flex flex-col gap-3">
           <BlurCircle top="-100px" left="-100px" />
@@ -84,9 +90,17 @@ const MovieDetails = ({ isReleased = true }) => {
             <span className="text-gray-400">User Rating</span>
           </div>
 
-          <p className="text-gray-400 mt-2 text-sm leading-relaxed max-w-xl">{show.movie.overview}</p>
+          <motion.div animate={{ opacity: 1 }} transition={{ duration: 0.3, ease: "easeInOut" }} className={`overflow-hidden ${!expanded && isLongText ? "line-clamp-5" : ""}`}>
+            <p className="text-gray-400 mt-2 text-sm leading-relaxed">{show.movie.overview}</p>
+          </motion.div>
 
-          <div className="flex items-center gap-2 text-gray-300 text-sm">
+          {isLongText && (
+            <button onClick={() => setExpanded(!expanded)} className="mt-2 text-left text-blue-500 text-sm hover:underline">
+              {expanded ? "Ẩn bớt" : "Hiển thị thêm"}
+            </button>
+          )}
+
+          <div className="flex flex-wrap items-center gap-2 text-gray-300 text-sm">
             <span className="bg-gray-800 px-2 py-1 rounded">{timeFormat(show.movie.runtime)}</span>
             <span>•</span>
             <span>{show.movie.genres.map((genre) => genre.name).join(", ")}</span>
@@ -98,7 +112,7 @@ const MovieDetails = ({ isReleased = true }) => {
             <button
               onClick={toggleTrailer}
               disabled={!videoId}
-              className={`flex items-center gap-2 px-7 py-3 text-sm transition rounded-md font-medium cursor-pointer active:scale-95 ${
+              className={`flex items-center gap-2 px-5 md:px-7 py-3 text-sm transition rounded-md font-medium cursor-pointer active:scale-95 ${
                 videoId ? "bg-gray-700 hover:bg-gray-600 text-white" : "bg-gray-600 text-gray-400 cursor-not-allowed"
               }`}
             >
@@ -109,7 +123,7 @@ const MovieDetails = ({ isReleased = true }) => {
             {isReleased && (
               <a
                 href="#dateSelect"
-                className="flex items-center gap-2 px-7 py-3 text-sm bg-primary hover:bg-primary-dull transition rounded-md
+                className="flex items-center gap-2 px-5 md:px-7 py-3 text-sm bg-primary hover:bg-primary-dull transition rounded-md
               font-medium cursor-pointer active:scale-95 text-white"
               >
                 <TicketIcon className="w-5 h-5" />
@@ -160,10 +174,10 @@ const MovieDetails = ({ isReleased = true }) => {
         </button>
 
         <div id="cast-list" className="overflow-x-auto no-scrollbar scroll-smooth">
-          <div className="flex items-center gap-6 w-max px-6">
+          <div className="flex items-center gap-6 w-max px-0 md:px-6">
             {show.movie.casts.slice(0, 12).map((cast, index) => (
               <div key={index} className="flex flex-col items-center text-center transition-transform hover:scale-105">
-                <img src={image_base_url + cast.profile_path} alt={cast.name} className="rounded-full h-20 md:h-24 aspect-square object-cover shadow-md hover:shadow-lg transition-shadow" />
+                <img src={image_base_url + cast.profile_path} alt={cast.name} className="rounded-full h-16 md:h-24 aspect-square object-cover shadow-md hover:shadow-lg transition-shadow" />
                 <p className="font-medium text-xs md:text-sm mt-3 line-clamp-1">{cast.name}</p>
               </div>
             ))}

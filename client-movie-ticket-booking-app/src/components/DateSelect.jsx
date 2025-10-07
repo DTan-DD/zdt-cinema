@@ -86,22 +86,22 @@ const DateSelect = ({ dateTime, id }) => {
   };
 
   return (
-    <div id="dateSelect" className="pt-30">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div id="dateSelect" className="pt-15 md:pt-20">
+      <div className="max-w-7xl mx-auto px-0 md:px-4 sm:px-6 lg:px-8">
         <div className="relative bg-primary/10 rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
           <BlurCircle top="-100px" left="-100px" />
           <BlurCircle top="100px" left="0px" />
 
           {/* Header */}
           <div className="bg-gradient-to-r from-primary/5 to-primary/10 p-6 border-b border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-200 mb-2">Chọn suất chiếu</h2>
+            <h2 className="text-xl md:text-2xl font-bold text-gray-200 mb-2">Chọn suất chiếu</h2>
             <p className="text-gray-200">Hãy chọn ngày và giờ yêu thích của bạn</p>
           </div>
 
-          <div className="p-6 lg:p-8">
+          <div className="p-4 lg:p-8">
             {/* Date Selection */}
             <div className="mb-8">
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex flex-col md:flex-row gap-2 md:gap-0 md:items-center justify-between mb-6">
                 <h3 className="text-lg font-semibold text-gray-200 flex items-center gap-2">
                   <CalendarIcon className="w-5 h-5 text-primary" />
                   Chọn ngày chiếu
@@ -115,7 +115,7 @@ const DateSelect = ({ dateTime, id }) => {
                   <button
                     onClick={handlePrevDates}
                     disabled={currentDateIndex === 0}
-                    className={`p-2 rounded-full border-2 transition-all duration-200 ${
+                    className={`p-1 md:p-2 rounded-full border-2 transition-all duration-200 ${
                       currentDateIndex === 0 ? "border-gray-200 text-gray-200 cursor-not-allowed" : "border-primary/30 text-primary hover:bg-primary hover:text-white hover:border-primary"
                     }`}
                   >
@@ -160,7 +160,7 @@ const DateSelect = ({ dateTime, id }) => {
                   <button
                     onClick={handleNextDates}
                     disabled={currentDateIndex >= sortedDates.length - visibleDates}
-                    className={`p-2 rounded-full border-2 transition-all duration-200 ${
+                    className={`p-1 md:p-2 rounded-full border-2 transition-all duration-200 ${
                       currentDateIndex >= sortedDates.length - visibleDates
                         ? "border-gray-200 text-gray-200 cursor-not-allowed"
                         : "border-primary/30 text-primary hover:bg-primary hover:text-white hover:border-primary"

@@ -4,6 +4,7 @@ import axios from "axios";
 import Movie from "../models/movie.model.js";
 import Show from "../models/show.model.js";
 import { inngest } from "../inngest/index.js";
+import { BadRequestError } from "../core/error.response.js";
 
 // API to get now playing movies from TMDB API
 export const getNowPlayingMoviesFromApi = async (req, res) => {
@@ -213,6 +214,7 @@ export const getShow = async (req, res) => {
   // get all coming shows for the movie
   const shows = await Show.find({
     movie: movieId,
+    isPublished: true,
     showDateTime: { $gte: new Date() },
   }).populate("cinema"); // lấy luôn thông tin rạp
 
