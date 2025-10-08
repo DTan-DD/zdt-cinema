@@ -55,7 +55,7 @@ export const getDashboardData = async (req, res) => {
     totalSeatsBooked += bookedSeats;
     totalSeats += 100; // giả định 100 ghế / show, nếu bạn có schema cinema thì thay vào
   });
-  const occupancyRate = totalSeats ? (totalSeatsBooked / totalSeats) * 100 : 0;
+  const occupancyRate = totalSeats ? ((totalSeatsBooked / totalSeats) * 100).toPrecision(2) : 0;
 
   // ===== 6. Growth so với ngày trước =====
   const yesterdayStart = startOfDay(subDays(new Date(), 1));
@@ -334,6 +334,33 @@ export const getAllBookings = async (req, res) => {
   return { bookings, pagination: { total, page: parseInt(page), limit: parseInt(limit), totalPages: Math.ceil(total / limit) } };
 };
 
+export const getAllUsers = async (req, res) => {
+  const { filter = "all", sort = "newest", page = 1, limit = 10, search = "" } = req.query;
+
+  const now = new Date();
+  let query = {};
+
+  // --- Xử lý search tốt hơn ---
+  if (search) {
+    query.$or = [{ name: { $regex: search, $options: "i" } }, { email: { $regex: search, $options: "i" } }];
+  }
+
+  // --- Sort ---
+  let sortOption = { createdAt: -1 };
+  if (sort === "oldest") sortOption = { createdAt: 1 };
+
+  // --- Pagination ---
+  const skip = (parseInt(page) - 1) * parseInt(limit);
+
+  // --- Query với populate ---
+  const [users, total] = await Promise.all([
+    User.find(query).sort(sortOption).skip(skip).limit(parseInt(limit)).lean(), // thêm lean() để tối ưu performance
+    User.countDocuments(query),
+  ]);
+
+  return { users, pagination: { total, page: parseInt(page), limit: parseInt(limit), totalPages: Math.ceil(total / limit) } };
+};
+
 // API to update show
 export const updateShow = async (req, res) => {
   const { showId } = req.params;
@@ -451,6 +478,7 @@ export const deleteBooking = async (req, res) => {
 // API deleted movie
 export const deleteMovie = async (req, res) => {
   const { movieId } = req.params;
+  console.log(movieId);
   const movie = await Movie.findById(movieId);
   if (!movie) {
     throw new BadRequestError("Movie not found");

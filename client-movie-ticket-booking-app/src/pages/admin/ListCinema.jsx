@@ -151,7 +151,7 @@ const ListCinemas = () => {
             <option value="seats">Số ghế</option> */}
           </select>
 
-          <div className="text-sm text-gray-600 flex items-center">Tổng: {totalCinemas} rạp chiếu</div>
+          <div className="text-sm text-gray-200 flex items-center">Tổng: {totalCinemas} rạp chiếu</div>
         </div>
 
         {/* Search Section */}

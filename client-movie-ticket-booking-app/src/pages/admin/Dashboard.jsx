@@ -52,7 +52,7 @@ const Dashboard = () => {
     },
     {
       title: "Tổng doanh thu",
-      value: `${currency} ${dashboardData.totalRevenue?.toLocaleString() || "0"}`,
+      value: `${dashboardData.totalRevenue?.toLocaleString() || "0"} ${currency}`,
       icon: CircleDollarSignIcon,
       change: dashboardData.revenueGrowth || 0,
       color: "bg-green-500",

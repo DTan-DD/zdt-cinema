@@ -147,7 +147,7 @@ const ListBookings = () => {
             <option value="newest">Mới nhất</option>
             <option value="oldest">Cũ nhất</option>
           </select>
-          <div className="text-sm text-gray-600 flex items-center">Tổng: {totalBookings} bookings</div>
+          <div className="text-sm text-gray-200 flex items-center">Tổng: {totalBookings} bookings</div>
         </div>
 
         <div className="flex gap-4">

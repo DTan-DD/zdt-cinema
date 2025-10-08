@@ -34,7 +34,7 @@ const UpcomingMovies = () => {
       <div className="relative mb-60 my-40 px-6 md:px-16 lg:px-40 xl:px-40 overflow-hidden min-h-[80vh]">
         <BlurCircle top="150px" left="0px" />
         <BlurCircle top="50px" left="50px" />
-        <h1 className="text-lg font-medium my-4">Các phim đang chiếu</h1>
+        <h1 className="text-lg font-medium my-4">Các phim sắp ra mắt:</h1>
         <div className="flex flex-wrap gap-8 max-sm:justify-center">
           {upcomingShows.map((movie) => (
             <MovieCard key={movie._id} movie={movie} isReleased={false} />

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, PlusCircle, ShoppingBag, PlusSquare, MonitorIcon, List, ChevronLeft, ChevronRight, ShoppingCart, Film } from "lucide-react";
+import { LayoutDashboard, PlusCircle, ShoppingBag, UserIcon, PlusSquare, MonitorIcon, List, ChevronLeft, ChevronRight, ShoppingCart, Film } from "lucide-react";
 import { useAppContext } from "../../context/AppContext";
 
 const AdminSidebar = ({ assets }) => {
@@ -97,6 +97,13 @@ const AdminSidebar = ({ assets }) => {
       icon: MonitorIcon,
       category: "cinemas",
       badge: notificationCounts.cinemas,
+    },
+    {
+      name: "Người dùng",
+      path: "/admin/list-users",
+      icon: UserIcon,
+      category: "users",
+      badge: notificationCounts.users,
     },
   ];
 

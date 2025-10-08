@@ -5,6 +5,8 @@ import dateFormat from "../../lib/dateFormat";
 import { useAppContext } from "../../context/AppContext";
 import EditShowModal from "../../components/admin/EditShowModal";
 import toast from "react-hot-toast";
+import { s } from "framer-motion/client";
+import ConfirmDeleteModal from "../../components/admin/ConfirmDeleteModal";
 
 const ListShows = () => {
   const currency = import.meta.env.VITE_CURRENCY;
@@ -23,6 +25,8 @@ const ListShows = () => {
   const [totalShows, setTotalShows] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showToDelete, setShowToDelete] = useState(null);
 
   // New date search states
   const [searchType, setSearchType] = useState("text"); // "text" or "date"
@@ -115,15 +119,22 @@ const ListShows = () => {
     setShowEditModal(true);
   };
 
-  const handleDelete = async (showId) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa show này?")) {
+  const handleConfirmDelete = async () => {
+    if (showToDelete) {
       try {
-        const { data } = await axios.put(`/v1/api/admin/delete-show/${showId}`, {
-          headers: { Authorization: `Bearer ${await getToken()}` },
-        });
+        console.log(showToDelete._id);
+        const { data } = await axios.put(
+          `/v1/api/admin/delete-show/${showToDelete._id}`,
+          {},
+          {
+            headers: { Authorization: `Bearer ${await getToken()}` },
+          }
+        );
         if (data.success) {
           toast.success("Xóa show thành công");
-          getAllShows(); // Refresh the list
+          getAllShows();
+          setShowDeleteModal(false);
+          setShowToDelete(null);
         }
       } catch (error) {
         toast.error("Có lỗi xảy ra khi xóa show");
@@ -203,6 +214,11 @@ const ListShows = () => {
     return today.toISOString().split("T")[0];
   };
 
+  const handleDeleteClick = (show) => {
+    setShowToDelete(show);
+    setShowDeleteModal(true);
+  };
+
   return !loading ? (
     <>
       <Title text1="Danh sách" text2="Lịch Chiếu" />
@@ -228,7 +244,7 @@ const ListShows = () => {
             <option value="oldest">Cũ nhất</option>
           </select>
 
-          <div className="text-sm text-gray-600 flex items-center">Tổng: {totalShows} suất chiếu</div>
+          <div className="text-sm text-gray-200 flex items-center">Tổng: {totalShows} suất chiếu</div>
         </div>
 
         {/* Enhanced Search Section */}
@@ -340,7 +356,7 @@ const ListShows = () => {
                         {!enableEdit ? "Xem" : "Sửa"}
                       </button>
                       <button
-                        onClick={() => handleDelete(show._id)}
+                        onClick={() => handleDeleteClick(show)}
                         disabled={disableDelete}
                         className={`px-3 py-1 rounded text-xs ${disableDelete ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-red-500 text-white hover:bg-red-600"}`}
                       >
@@ -402,6 +418,20 @@ const ListShows = () => {
             setSelectedShow(null);
           }}
           onUpdate={handleUpdateShow}
+        />
+      )}
+
+      {/* Delete Modal */}
+      {showDeleteModal && (
+        <ConfirmDeleteModal
+          title="Xác nhận xóa suất chiếu"
+          message={`Bạn có chắc chắn muốn xóa show "${showToDelete?.movie?.title}", 
+          lịch chiếu ${dateFormat(showToDelete?.showDateTime)}, tại rạp "${showToDelete?.cinema?.name}"?`}
+          onConfirm={handleConfirmDelete}
+          onCancel={() => {
+            setShowDeleteModal(false);
+            setShowToDelete(null);
+          }}
         />
       )}
     </>

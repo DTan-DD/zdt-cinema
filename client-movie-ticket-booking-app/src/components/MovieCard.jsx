@@ -20,7 +20,7 @@ const MovieCard = ({ movie, isReleased = true }) => {
         }}
         src={image_base_url + movie.backdrop_path}
         alt=""
-        className="rounded-lg w-full h-52 object-right-bottom object-cover cursor-pointer"
+        className="rounded-lg w-full h-52 object-right-bottom object-cover  cursor-pointer"
       />
 
       <p className="font-semibold mt-2 truncate">{movie.title}</p>
@@ -33,6 +33,8 @@ const MovieCard = ({ movie, isReleased = true }) => {
           .join(" | ")}{" "}
         • {timeFormat(movie.runtime)}
       </p>
+
+      {!isReleased && <p className="text-sm text-gray-200 mt-2">Ngày ra mắt: {movie.release_date}</p>}
 
       <div className="flex items-center justify-between mt-4 pb-3">
         {isReleased ? (

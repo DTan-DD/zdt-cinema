@@ -66,9 +66,9 @@ const DateSelect = ({ dateTime, id }) => {
     tomorrow.setDate(tomorrow.getDate() + 1);
 
     if (date.toDateString() === today.toDateString()) {
-      return { label: "Today", date: date.getDate(), month: date.toLocaleDateString("en-US", { month: "short" }) };
+      return { label: "Hôm nay", date: date.getDate(), month: date.toLocaleDateString("vi-VN", { month: "short" }) };
     } else if (date.toDateString() === tomorrow.toDateString()) {
-      return { label: "Tomorrow", date: date.getDate(), month: date.toLocaleDateString("en-US", { month: "short" }) };
+      return { label: "Ngày mai", date: date.getDate(), month: date.toLocaleDateString("vi-VN", { month: "short" }) };
     } else {
       return {
         label: date.toLocaleDateString("vi-VN", { weekday: "short" }),
@@ -181,7 +181,7 @@ const DateSelect = ({ dateTime, id }) => {
                     Hãy chọn rạp và suất chiếu
                   </h3>
                   <div className="text-sm text-gray-100">
-                    {formatDateDisplay(selectedDate).label}, {formatDateDisplay(selectedDate).month} {formatDateDisplay(selectedDate).date}
+                    {formatDateDisplay(selectedDate).label}, {formatDateDisplay(selectedDate).date} {formatDateDisplay(selectedDate).month}
                   </div>
                 </div>
 
@@ -236,8 +236,8 @@ const DateSelect = ({ dateTime, id }) => {
                                 </div>
 
                                 {isSelected && (
-                                  <div className="absolute -top-1 -right-1">
-                                    <div className="bg-white text-primary rounded-full p-1">
+                                  <div className="absolute  -top-1 -right-1">
+                                    <div className="bg-white border-2  border-green-700 text-primary rounded-full p-1">
                                       <CheckIcon className="w-3 h-3" />
                                     </div>
                                   </div>

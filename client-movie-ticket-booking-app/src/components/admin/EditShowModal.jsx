@@ -16,7 +16,14 @@ const EditShowModal = ({ show, cinemas, isReadOnly, onClose, onUpdate }) => {
   useEffect(() => {
     if (show) {
       const showDate = new Date(show.showDateTime);
-      const formattedDateTime = showDate.toISOString().slice(0, 16); // Format for datetime-local input
+      // Tính offset giữa UTC và local time (phút)
+      const offset = showDate.getTimezoneOffset(); // ở VN sẽ là -420 (tức +7h)
+
+      // Chuyển UTC → local
+      const localDate = new Date(showDate.getTime() - offset * 60000);
+
+      // Format lại theo chuẩn datetime-local (YYYY-MM-DDTHH:mm)
+      const formattedDateTime = localDate.toISOString().slice(0, 16);
 
       setFormData({
         showDateTime: formattedDateTime,
@@ -105,11 +112,12 @@ const EditShowModal = ({ show, cinemas, isReadOnly, onClose, onUpdate }) => {
 
     setLoading(true);
     try {
+      const localDate = new Date(formData.showDateTime);
       const updatedShow = {
         _id: show._id,
         // ...show,
         ...formData,
-        showDateTime: new Date(formData.showDateTime).toISOString(),
+        showDateTime: localDate.toISOString(),
       };
 
       await onUpdate(updatedShow);
@@ -136,9 +144,9 @@ const EditShowModal = ({ show, cinemas, isReadOnly, onClose, onUpdate }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-gray-500 rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">{isReadOnly ? "Thông tin Show" : "Chỉnh sửa Show"}</h2>
+          <h2 className="text-xl font-bold text-gray-600">{isReadOnly ? "Thông tin Show" : "Chỉnh sửa Show"}</h2>
           <button onClick={onClose} className="text-gray-500 hover:text-gray-700 text-2xl">
             ×
           </button>
@@ -189,7 +197,7 @@ const EditShowModal = ({ show, cinemas, isReadOnly, onClose, onUpdate }) => {
                   name="showDateTime"
                   value={formData.showDateTime}
                   onChange={handleInputChange}
-                  className={`w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.showDateTime ? "border-red-500" : "border-gray-300"}`}
+                  className={`w-full p-3 border bg-gray-500 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.showDateTime ? "border-red-500" : "border-gray-300"}`}
                   required
                 />
                 {errors.showDateTime && <p className="text-red-500 text-xs mt-1">{errors.showDateTime}</p>}
@@ -209,7 +217,7 @@ const EditShowModal = ({ show, cinemas, isReadOnly, onClose, onUpdate }) => {
                   name="showPrice"
                   value={formData.showPrice}
                   onChange={handleInputChange}
-                  className={`w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.showPrice ? "border-red-500" : "border-gray-300"}`}
+                  className={`w-full p-3 border bg-gray-500 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.showPrice ? "border-red-500" : "border-gray-300"}`}
                   min="1"
                   max="1000000"
                   // step="1000"
@@ -228,11 +236,11 @@ const EditShowModal = ({ show, cinemas, isReadOnly, onClose, onUpdate }) => {
             ) : (
               <>
                 <div className="space-y-2">
-                  <label className="flex items-center">
-                    <input type="checkbox" name="isDraft" checked={formData.isDraft} onChange={handleInputChange} className="mr-2" />
+                  <label className="flex items-center text-gray-500">
+                    <input type="checkbox" name="isDraft" checked={formData.isDraft} onChange={handleInputChange} className="mr-2 " />
                     Bản nháp
                   </label>
-                  <label className="flex items-center">
+                  <label className="flex items-center text-green-600">
                     <input type="checkbox" name="isPublished" checked={formData.isPublished} onChange={handleInputChange} className="mr-2" />
                     Xuất bản
                   </label>
@@ -246,7 +254,7 @@ const EditShowModal = ({ show, cinemas, isReadOnly, onClose, onUpdate }) => {
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-1">Số lượng đặt vé</label>
             <div className="p-3 bg-gray-500 rounded border">{Object.keys(show.occupiedSeats).length} vé đã đặt</div>
-            {Object.keys(show.occupiedSeats).length > 0 && <p className="text-amber-300 text-xs mt-1">Show này đã có người đặt vé, chỉ có thể xem thông tin</p>}
+            {Object.keys(show.occupiedSeats).length > 0 && <p className="text-primary text-sm mt-1">Show này đã có người đặt vé, chỉ có thể xem thông tin</p>}
           </div>
 
           {/* Submit Errors */}
@@ -254,7 +262,7 @@ const EditShowModal = ({ show, cinemas, isReadOnly, onClose, onUpdate }) => {
 
           {/* Action Buttons */}
           <div className="flex justify-end gap-3">
-            <button type="button" onClick={onClose} className="px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50">
+            <button type="button" onClick={onClose} className="px-4 py-2 hover:text-gray-600 border hover:bg-white border-gray-300 rounded bg-primary text-white">
               Đóng
             </button>
             {!isReadOnly && (

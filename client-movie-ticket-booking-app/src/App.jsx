@@ -23,6 +23,7 @@ import SearchPage from "./pages/SearchPage";
 import AddMovies from "./pages/admin/AddMovies";
 import ListMovies from "./pages/admin/ListMovies";
 import ListCinemas from "./pages/admin/ListCinema";
+import ListUsers from "./pages/admin/ListUser";
 
 const App = () => {
   const isAdminRoute = useLocation().pathname.startsWith("/admin");
@@ -66,6 +67,7 @@ const App = () => {
           <Route path="list-shows" element={<ListShows />} />
           <Route path="list-bookings" element={<ListBookings />} />
           <Route path="list-cinemas" element={<ListCinemas />} />
+          <Route path="list-users" element={<ListUsers />} />
         </Route>
       </Routes>
       {!isAdminRoute && <Footer />}

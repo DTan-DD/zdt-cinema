@@ -38,7 +38,7 @@ export const getNotifications = async (req, res) => {
     receiverIds: userId,
   })
     .sort({ createdAt: -1 })
-    .limit(50);
+    .limit(25);
 
   return { data: notifications };
 };

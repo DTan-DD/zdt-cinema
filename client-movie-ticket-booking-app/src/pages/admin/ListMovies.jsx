@@ -4,6 +4,7 @@ import { useAppContext } from "../../context/AppContext";
 import toast from "react-hot-toast";
 import Title from "../../components/admin/Title";
 import EditMovieModal from "../../components/admin/EditMovieModal";
+import ConfirmDeleteModal from "../../components/admin/ConfirmDeleteModal";
 
 const ListMovies = () => {
   const { axios, getToken, user } = useAppContext();
@@ -19,6 +20,8 @@ const ListMovies = () => {
   const [totalMovies, setTotalMovies] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [movieToDelete, setMovieToDelete] = useState(null);
 
   const getAllMovies = async () => {
     try {
@@ -72,15 +75,26 @@ const ListMovies = () => {
     setShowEditModal(true);
   };
 
-  const handleDelete = async (movieId) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa phim này?")) {
+  const handleDeleteClick = (movie) => {
+    setMovieToDelete(movie);
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (movieToDelete) {
       try {
-        const { data } = await axios.put(`/v1/api/admin/delete-movie/${movieId}`, {
-          headers: { Authorization: `Bearer ${await getToken()}` },
-        });
+        const { data } = await axios.put(
+          `/v1/api/admin/delete-movie/${movieToDelete._id}`,
+          {},
+          {
+            headers: { Authorization: `Bearer ${await getToken()}` },
+          }
+        );
         if (data.success) {
-          toast.success("Xóa phim thành công");
-          getAllMovies(); // Refresh the list
+          toast.success("Xóa show thành công");
+          getAllMovies();
+          setShowDeleteModal(false);
+          setMovieToDelete(null);
         }
       } catch (error) {
         toast.error("Có lỗi xảy ra khi xóa phim");
@@ -175,7 +189,7 @@ const ListMovies = () => {
             <option value="title">Tên A-Z</option> */}
           </select>
 
-          <div className="text-sm text-gray-600 flex items-center">Tổng: {totalMovies} phim</div>
+          <div className="text-sm text-gray-200 flex items-center">Tổng: {totalMovies} phim</div>
         </div>
 
         {/* Search Section */}
@@ -260,7 +274,7 @@ const ListMovies = () => {
                     <button onClick={() => handleEdit(movie)} className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs">
                       Sửa
                     </button>
-                    <button onClick={() => handleDelete(movie._id)} className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-xs">
+                    <button onClick={() => handleDeleteClick(movie)} className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-xs">
                       Xóa
                     </button>
                   </div>
@@ -316,6 +330,19 @@ const ListMovies = () => {
             setSelectedMovie(null);
           }}
           onUpdate={handleUpdateMovie}
+        />
+      )}
+
+      {/* Delete Modal */}
+      {showDeleteModal && (
+        <ConfirmDeleteModal
+          title="Xác nhận xóa phim"
+          message={`Bạn có chắc chắn muốn xóa phim "${movieToDelete?.title}"?`}
+          onConfirm={handleConfirmDelete}
+          onCancel={() => {
+            setShowDeleteModal(false);
+            setMovieToDelete(null);
+          }}
         />
       )}
     </>

@@ -12,6 +12,7 @@ import {
   deleteShow,
   deleteBooking,
   deleteMovie,
+  getAllUsers,
 } from "../services/admin.service.js";
 
 class AdminController {
@@ -40,6 +41,13 @@ class AdminController {
     new successResponse({
       message: "Get all bookings successfully ",
       metadata: await getAllBookings(req),
+    }).send(res);
+  };
+
+  getAllUsers = async (req, res, next) => {
+    new successResponse({
+      message: "Get all users successfully ",
+      metadata: await getAllUsers(req),
     }).send(res);
   };
 

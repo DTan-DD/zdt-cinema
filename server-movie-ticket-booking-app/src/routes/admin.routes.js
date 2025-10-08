@@ -14,6 +14,7 @@ adminRouter.get("/is-admin", adminController.isAdmin);
 adminRouter.get("/dashboard", asyncHandler(adminController.getDashboardData));
 adminRouter.get("/all-shows", asyncHandler(adminController.getAllShows));
 adminRouter.get("/all-bookings", asyncHandler(adminController.getAllBookings));
+adminRouter.get("/all-users", asyncHandler(adminController.getAllUsers));
 adminRouter.get("/all-movies", asyncHandler(movieController.getAllMovies));
 adminRouter.put("/update-show/:showId", asyncHandler(adminController.updateShow));
 adminRouter.put("/update-booking/:bookingId", asyncHandler(adminController.updateBooking));

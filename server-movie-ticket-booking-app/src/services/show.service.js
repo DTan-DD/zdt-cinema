@@ -12,8 +12,8 @@ export const getNowPlayingMoviesFromApi = async (req, res) => {
   const cutoff = new Date();
   cutoff.setDate(today.getDate() - 45); // chỉ lấy phim ra mắt trong 45 ngày qua
 
-  const nowPlayingUrl = "https://api.themoviedb.org/3/movie/now_playing?region=VN";
-  const upcomingUrl = "https://api.themoviedb.org/3/movie/upcoming?region=VN";
+  const nowPlayingUrl = "https://api.themoviedb.org/3/movie/now_playing?region=VN&language=vi-VN";
+  const upcomingUrl = "https://api.themoviedb.org/3/movie/upcoming?region=VN&language=vi-VN";
 
   const headers = { Authorization: `Bearer ${process.env.TMDB_API_KEY}` };
 
@@ -23,7 +23,7 @@ export const getNowPlayingMoviesFromApi = async (req, res) => {
   // Lọc phim đang chiếu (ra mắt trong 45 ngày gần đây)
   const filteredNowPlaying = nowPlayingRes.data.results.filter((movie) => {
     const release = new Date(movie.release_date);
-    return release >= cutoff && release <= today;
+    return release >= cutoff;
   });
 
   // Lấy phim sắp chiếu
@@ -201,7 +201,7 @@ export const getShowByCinema = async (req, res) => {
 
 export const getUpcomingShows = async (req, res) => {
   const today = new Date().toISOString().split("T")[0];
-  const movies = await Movie.find({ release_date: { $gte: today } }).sort({ showDateTime: 1 });
+  const movies = await Movie.find({ release_date: { $gt: today } }).sort({ showDateTime: 1 });
   //   filter unique
   const uniqueMovies = new Set(movies);
 
