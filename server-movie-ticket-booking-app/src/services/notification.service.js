@@ -16,13 +16,13 @@ export async function createNotification({ type, title, message, receiverIds, me
   await notif.save();
 
   // Push sang BullMQ để xử lý async (gửi email, push noti…)
-  await notificationQueue.add("sendNotification", {
-    type,
-    title,
-    message,
-    notifId: notif._id,
-    receiverIds,
-  });
+  // await notificationQueue.add("sendNotification", {
+  //   type,
+  //   title,
+  //   message,
+  //   notifId: notif._id,
+  //   receiverIds,
+  // });
 
   await publishNotificationJob({
     type,
