@@ -56,50 +56,52 @@ export const AppProvider = ({ children }) => {
   // Socket.IO connection
   useEffect(() => {
     const initSocket = async () => {
+      // Cleanup socket cũ nếu có
+      if (socketRef.current) {
+        socketRef.current.removeAllListeners();
+        socketRef.current.disconnect();
+      }
+
       const token = await getToken({ template: "myJwtTemplate" });
-      socketRef.current = io(BASE_URL, {
-        auth: {
-          token: token,
-        },
+      const socket = io(BASE_URL, {
+        auth: { token },
         transports: ["websocket", "polling"],
         reconnection: true,
-        reconnectionDelay: 10000,
+        reconnectionDelay: 1000,
+        reconnectionDelayMax: 5000,
         reconnectionAttempts: 5,
       });
+      socketRef.current = socket;
 
-      // Kết nối thành công
-      socketRef.current.on("connect", () => {
-        console.log("Socket connected:");
+      socket.on("connect", () => {
+        console.log("✅ Socket connected:", socket.id);
       });
 
-      // Lắng nghe thông báo mới
-      socketRef.current.on("notification:new", (notification) => {
-        // console.log("New notification received:", notification);
-
+      socket.on("notification:new", (notification) => {
         setNotifications((prev) => [notification, ...prev]);
         setUnreadCount((prev) => prev + 1);
       });
 
-      // Xử lý lỗi
-      socketRef.current.on("connect_error", (error) => {
-        console.error("Socket connection error:", error);
+      socket.on("connect_error", async (error) => {
+        console.error("❌ Socket error:", error.message);
+        if (error.message.includes("jwt") || error.message.includes("unauthorized")) {
+          const newToken = await getToken({ template: "myJwtTemplate" });
+          socket.auth = { token: newToken };
+          socket.connect(); // reconnect đúng
+        }
       });
 
-      socketRef.current.on("disconnect", (reason) => {
-        console.log("Socket disconnected:", reason);
+      socket.on("disconnect", (reason) => {
+        console.log("⚠️ Socket disconnected:", reason);
+        // Socket.IO tự reconnect, không cần initSocket lại
       });
     };
 
-    // Fetch notifications ban đầu
-    fetchNotifications();
-
-    // Khởi tạo socket
-    if (user?.id) {
-      initSocket();
-    }
+    if (user?.id) initSocket();
 
     return () => {
       if (socketRef.current) {
+        socketRef.current.removeAllListeners();
         socketRef.current.disconnect();
       }
     };

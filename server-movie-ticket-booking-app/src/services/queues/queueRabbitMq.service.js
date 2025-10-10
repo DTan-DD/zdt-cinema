@@ -51,7 +51,7 @@ export const publishNotificationJob = async (data) => {
     const { channel, queue } = getChannel("noti"); // ⚡ Đổi sang "noti"
     const payload = Buffer.from(JSON.stringify(data));
 
-    const sent = channel.sendToQueue(queue, payload, { persistent: true });
+    const sent = await channel.sendToQueue(queue, payload, { persistent: true });
 
     if (sent) {
       console.log("✅ [RabbitMQ] Noti job queued:", data);

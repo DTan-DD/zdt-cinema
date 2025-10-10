@@ -1,6 +1,5 @@
 import { getChannel } from "../../../configs/rabbitmq.config.js";
 import Notification from "../../models/notification.model.js";
-import { io } from "../../../socket.js";
 import axios from "axios";
 
 export const startNotificationWorker = async () => {

@@ -1,6 +1,6 @@
 "use strict";
 import Notification from "../models/notification.model.js";
-import { io } from "../../socket.js"; // Socket.IO instance (export từ app.js)
+// import { io } from "../../socket.js";
 import { notificationQueue } from "./queues/notificationQueue.service.js";
 import { publishNotificationJob } from "./queues/queueRabbitMq.service.js";
 
@@ -31,11 +31,6 @@ export async function createNotification({ type, title, message, receiverIds, me
     notifId: notif._id,
     receiverIds,
     meta,
-  });
-
-  // Emit realtime qua Socket.IO (đẩy cho từng user trong receiverIds)
-  receiverIds.forEach((userId) => {
-    io.to(userId.toString()).emit("notification", notif);
   });
 
   return notif;

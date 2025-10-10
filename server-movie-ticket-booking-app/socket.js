@@ -6,6 +6,9 @@ let io;
 export function initSocket(server) {
   io = new Server(server, {
     cors: { origin: "*" },
+    // Tăng timeout
+    pingTimeout: 60000, // 60s (mặc định 20s)
+    pingInterval: 25000, // 25s (mặc định 25s)
   });
 
   // Dùng middleware chung
@@ -23,8 +26,14 @@ export function initSocket(server) {
       }
     }
 
-    socket.on("disconnect", () => {
-      console.log(`❌ User ${socket.userId} disconnected`);
+    // Log disconnect reason
+    socket.on("disconnect", (reason) => {
+      console.log(`❌ [Socket] User ${socket.userId} disconnected | Reason: ${reason} | Socket ID: ${socket.id}`);
+    });
+
+    // Log errors
+    socket.on("error", (error) => {
+      console.error(`⚠️ [Socket] Error for user ${socket.userId}:`, error);
     });
   });
 }
