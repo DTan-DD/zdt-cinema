@@ -9,7 +9,7 @@ const paymentLogSchema = new Schema(
     provider: { type: String, required: true }, // ZaloPay, MoMo, VNPay
     bookingId: { type: String, ref: "Booking" },
     rawData: Object,
-    status: { type: String, enum: ["PENDING", "SUCCESS", "FAILED"], default: "PENDING" },
+    status: { type: String, enum: ["PENDING", "SUCCESS", "FAILED", "CANCELLED"], default: "PENDING" },
 
     steps: {
       updateBooking: {

@@ -2,6 +2,7 @@
 import Notification from "../models/notification.model.js";
 import { io } from "../../socket.js"; // Socket.IO instance (export từ app.js)
 import { notificationQueue } from "./queues/notificationQueue.service.js";
+import { publishNotificationJob } from "./queues/queueRabbitMq.service.js";
 
 export async function createNotification({ type, title, message, receiverIds, meta = {} }) {
   // Lưu vào MongoDB
@@ -21,6 +22,15 @@ export async function createNotification({ type, title, message, receiverIds, me
     message,
     notifId: notif._id,
     receiverIds,
+  });
+
+  await publishNotificationJob({
+    type,
+    title,
+    message,
+    notifId: notif._id,
+    receiverIds,
+    meta,
   });
 
   // Emit realtime qua Socket.IO (đẩy cho từng user trong receiverIds)

@@ -1,7 +1,7 @@
 import { Worker } from "bullmq";
 import { io } from "../../../socket.js";
 import Notification from "../../models/notification.model.js";
-import { connectRedis, disconnectRedis } from "../../../configs/redisConnection.js";
+import { connectRedis, disconnectRedis } from "../../../configs/redisConnection.config.js";
 
 const startNotificationWorker = async () => {
   const connection = await connectRedis();

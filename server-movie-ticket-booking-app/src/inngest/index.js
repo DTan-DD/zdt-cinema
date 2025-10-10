@@ -6,6 +6,8 @@ import Booking from "../models/booking.model.js";
 import sendEmail from "../../configs/nodeMailer.config.js";
 import PaymentLog from "../models/paymentLog.model.js";
 import { sendEmail_V2 } from "../../configs/sendEmail.config.js";
+import { getAdmins } from "../utils/index.js";
+import { createNotification } from "../services/notification.service.js";
 
 // Create a client to send and receive events
 export const inngest = new Inngest({ id: "movie-ticket-booking" });
@@ -25,6 +27,15 @@ const syncUserCreation = inngest.createFunction(
       image: image_url,
     };
     await User.create(userData);
+    // Tạo notification
+    const admins = await getAdmins();
+    await createNotification({
+      type: "USER",
+      title: "Có khách hàng mới đăng ký",
+      message: `Khách hàng ${userData.name} vừa đăng ký với email ${userData.email}.`,
+      receiverIds: admins.map((a) => a.id),
+      meta: { user: userData },
+    });
   }
 );
 
@@ -82,6 +93,7 @@ const releaseSeatsAndDeleteBooking = inngest.createFunction({ id: "release-seats
       show.markModified("occupiedSeats");
       await show.save();
       booking.isDeleted = true;
+      booking.paymentLink = "";
       await booking.save();
       // await Booking.findByIdAndDelete(bookingId);
       // await PaymentLog.findOneAndDelete({ bookingId: bookingId });

@@ -1,5 +1,5 @@
 import { Queue } from "bullmq";
-import { connectRedis } from "../../../configs/redisConnection.js";
+import { connectRedis } from "../../../configs/redisConnection.config.js";
 
 let connection;
 

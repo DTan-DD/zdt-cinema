@@ -74,7 +74,7 @@ export const AppProvider = ({ children }) => {
 
       // Lắng nghe thông báo mới
       socketRef.current.on("notification:new", (notification) => {
-        console.log("New notification received:", notification);
+        // console.log("New notification received:", notification);
 
         setNotifications((prev) => [notification, ...prev]);
         setUnreadCount((prev) => prev + 1);

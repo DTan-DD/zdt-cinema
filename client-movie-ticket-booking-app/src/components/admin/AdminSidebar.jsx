@@ -12,6 +12,8 @@ const AdminSidebar = ({ assets }) => {
     movies: 0,
     shows: 0,
     dashboard: 0,
+    cinemas: 0,
+    users: 0,
   });
 
   // Fetch notification counts theo từng category
@@ -23,6 +25,7 @@ const AdminSidebar = ({ assets }) => {
         shows: 0,
         dashboard: 0,
         cinemas: 0,
+        users: 0,
       };
 
       notifications.forEach((notif) => {
@@ -35,6 +38,10 @@ const AdminSidebar = ({ assets }) => {
           counts.shows++;
         } else if (!notif.isRead && notif.type === "SYSTEM") {
           counts.dashboard++;
+        } else if (!notif.isRead && notif.type === "CINEMA") {
+          counts.cinemas++;
+        } else if (!notif.isRead && notif.type === "USER") {
+          counts.cinemas++;
         }
       });
 

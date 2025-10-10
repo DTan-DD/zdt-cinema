@@ -2,7 +2,7 @@
 import { Worker } from "bullmq";
 import PaymentLog from "../../models/paymentLog.model.js";
 import { inngest } from "../../inngest/index.js";
-import { connectRedis, disconnectRedis } from "../../../configs/redisConnection.js";
+import { connectRedis, disconnectRedis } from "../../../configs/redisConnection.config.js";
 
 const startSendMailWorker = async () => {
   const connection = await connectRedis();

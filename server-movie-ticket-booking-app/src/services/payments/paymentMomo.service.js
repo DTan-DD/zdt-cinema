@@ -4,6 +4,7 @@ import { BadRequestError } from "../../core/error.response.js";
 import PaymentLog from "../../models/paymentLog.model.js";
 import { paymentQueue } from "../queues/paymentQueue.service.js";
 import { updateBooking } from "../updateBooking.service.js";
+import { publishPaymentJob } from "../queues/queueRabbitMq.service.js";
 
 export async function createMomoPayment({ orderId, amount, originUrl }) {
   const endpoint = "https://test-payment.momo.vn/v2/gateway/api/create";
@@ -92,6 +93,12 @@ export const momoCallback = async (req, res) => {
       await paymentQueue.add("updateBooking", { logId: paymentLog._id });
       console.log("✅ Pushed updateBooking to queue");
       */
+      await publishPaymentJob({
+        type: "updateBooking", // key để worker nhận biết job loại nào
+        logId: paymentLog._id,
+      });
+
+      console.log("✅ [Callback] Queued updateBooking job:", paymentLog._id);
     }
 
     // Momo yêu cầu trả về 200 OK để xác nhận đã nhận callback

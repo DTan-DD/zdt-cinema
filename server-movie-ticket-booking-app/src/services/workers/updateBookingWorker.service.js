@@ -3,7 +3,7 @@ import { Worker } from "bullmq";
 import PaymentLog from "../../models/paymentLog.model.js";
 import Booking from "../../models/booking.model.js";
 import { paymentQueue } from "../queues/paymentQueue.service.js";
-import { connectRedis, disconnectRedis } from "../../../configs/redisConnection.js";
+import { connectRedis, disconnectRedis } from "../../../configs/redisConnection.config.js";
 
 const startPaymentWorker = async () => {
   const connection = await connectRedis();
