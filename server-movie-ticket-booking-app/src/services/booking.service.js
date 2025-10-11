@@ -98,7 +98,8 @@ export const createBookingV2 = async (req) => {
     // Run Inngest Schedule Func to check payment status
     await inngest.send({ name: "app/checkpayment", data: { bookingId: booking._id.toString() } });
 
-    // Tạo notification
+    await new Promise((resolve) => setImmediate(resolve));
+    // // Tạo notification
     const admins = await getAdmins();
     await createNotification({
       type: "BOOKING",
@@ -123,6 +124,21 @@ export const createBookingV2 = async (req) => {
   } finally {
     await session.endSession();
   }
+
+  // Tạo notification
+  // const admins = await getAdmins();
+  // await createNotification({
+  //   type: "BOOKING",
+  //   title: "Có đơn đặt vé mới 🎬",
+  //   message: `Khách hàng vừa đặt vé cho phim ${showData.movie.title}`,
+  //   receiverIds: admins.map((a) => a.id),
+  //   meta: { bookingId: booking._id },
+  // });
+
+  // return {
+  //   redirectUrl: paymentLink,
+  //   bookingId: booking._id,
+  // };
 };
 
 const createPaymentLink = async (booking, paymentMethod, origin) => {

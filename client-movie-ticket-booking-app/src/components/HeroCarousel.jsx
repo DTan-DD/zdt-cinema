@@ -63,22 +63,20 @@ const HeroCarousel = ({ shows = [], image_base_url }) => {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col items-start justify-center gap-6 px-6 md:px-16 lg:px-36 h-full">
+      <div className="relative z-10 flex flex-col items-start justify-center gap-10 px-6 md:px-16 lg:px-36 h-full">
         {/* Movie Title */}
-        <div className="space-y-4 max-w-2xl">
-          <h1 className="text-4xl md:text-3xl lg:text-6xl font-bold leading-tight text-white drop-shadow-lg">{currentMovie.title}</h1>
-
+        <div className="space-y-4 mb-5 max-w-2xl">
+          <h1 className="text-4xl  md:text-3xl lg:text-6xl font-bold leading-tight text-white drop-shadow-lg">{currentMovie.title}</h1>
           {currentMovie.tagline && <p className="text-xl md:text-2xl text-gray-200 font-light italic">"{currentMovie.tagline}"</p>}
-        </div>
-
-        {/* Movie Info */}
-        <div className="flex flex-wrap items-center gap-6 text-gray-200">
-          <div className="flex flex-wrap gap-2">
-            {currentMovie.genres.slice(0, 3).map((genre, index) => (
-              <span key={index} className="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium">
-                {genre.name}
-              </span>
-            ))}
+          {/* Movie Info */}
+          <div className="flex flex-wrap items-center gap-6 text-gray-200">
+            <div className="flex flex-wrap gap-2">
+              {currentMovie.genres.slice(0, 3).map((genre, index) => (
+                <span key={index} className="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium">
+                  {genre.name}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -114,20 +112,20 @@ const HeroCarousel = ({ shows = [], image_base_url }) => {
         <>
           <button
             onClick={goToPrevious}
-            className="absolute left-4 md:left-8 top-4/5 md:top-1/2 -translate-y-1/2 z-20
-                     p-3 bg-transparent hover:bg-black/70 backdrop-blur-sm rounded-full
+            className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-20
+                     p-1 md:p-3 bg-transparent  hover:bg-black/70 backdrop-blur-sm rounded-full
                      text-white transition-all duration-300 hover:scale-110"
           >
-            <ChevronLeft className="w-6 h-6" />
+            <ChevronLeft className="w-5 h-5 md:w-6 md:h-6" />
           </button>
 
           <button
             onClick={goToNext}
-            className="absolute right-4 md:right-8 top-4/5 md:top-1/2 -translate-y-1/2 z-20
-                     p-3 bg-transparent hover:bg-black/70 backdrop-blur-sm rounded-full
+            className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-20
+                     p-1 md:p-3 bg-transparent hover:bg-black/70 backdrop-blur-sm rounded-full
                      text-white transition-all duration-300 hover:scale-110"
           >
-            <ChevronRight className="w-6 h-6" />
+            <ChevronRight className="w-5 h-5 md:w-6 md:h-6" />
           </button>
         </>
       )}

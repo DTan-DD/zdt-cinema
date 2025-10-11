@@ -73,12 +73,12 @@ const BookingDetailsModal = ({ isOpen, onClose, booking, image_base_url }) => {
           </button>
         </div>
 
-        <div className="p-6">
+        <div className=" p-3 md:p-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Left Column - Movie & Show Info */}
             <div className="space-y-6">
               {/* Movie Info */}
-              <div className="bg-gray-50 rounded-xl p-6">
+              <div className="bg-gray-50 rounded-xl p-1 md:p-6">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
                   <Film className="w-5 h-5" />
                   Thông tin phim
@@ -99,14 +99,14 @@ const BookingDetailsModal = ({ isOpen, onClose, booking, image_base_url }) => {
                         <MapPin className="w-4 h-4" />
                         <span>{show?.cinema?.name}</span>
                       </div>
-                      <div className="text-gray-500">{isoTimeFormat(show?.showDateTime)}</div>
+                      <div className="text-gray-500">Suất chiếu: {formatPaymentDate(show?.showDateTime)}</div>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Booked Seats */}
-              <div className="bg-blue-50 rounded-xl p-6">
+              <div className="bg-blue-50 rounded-xl p-3 md:p-6">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
                   <Ticket className="w-5 h-5" />
                   Ghế đã đặt ({bookedSeats?.length} ghế)
@@ -135,7 +135,7 @@ const BookingDetailsModal = ({ isOpen, onClose, booking, image_base_url }) => {
 
               {/* User Info */}
               {user && (
-                <div className="bg-green-50 rounded-xl p-6">
+                <div className="bg-green-50 rounded-xl p-3 md:p-6">
                   <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
                     <User className="w-5 h-5" />
                     Thông tin khách hàng
@@ -158,7 +158,7 @@ const BookingDetailsModal = ({ isOpen, onClose, booking, image_base_url }) => {
                 </div>
               )}
 
-              <div className="bg-green-50 rounded-xl p-6">
+              <div className="bg-green-50 rounded-xl p-3 md:p-6">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
                   <CheckCircle className="w-5 h-5 text-green-600" />
                   Trạng thái thanh toán
@@ -173,7 +173,7 @@ const BookingDetailsModal = ({ isOpen, onClose, booking, image_base_url }) => {
 
                   {/* Payment Method */}
                   {isPaid && paymentMethod && (
-                    <div className="p-4 bg-white rounded-lg border border-green-200">
+                    <div className="p-2 md:p-4 bg-white rounded-lg border border-green-200">
                       <div className="flex items-center gap-4">
                         <div className={`p-3 rounded-lg ${paymentInfo.color} text-white`}>
                           <PaymentIcon className="w-6 h-6" />
@@ -188,7 +188,7 @@ const BookingDetailsModal = ({ isOpen, onClose, booking, image_base_url }) => {
 
                   {/* Payment Date */}
                   {isPaid && paymentDate && (
-                    <div className="p-4 bg-white rounded-lg border border-green-200">
+                    <div className="p-2 md:p-4 bg-white rounded-lg border border-green-200">
                       <div className="flex items-center gap-4">
                         <div className="p-3 rounded-lg bg-gray-100 text-gray-600">
                           <Calendar className="w-6 h-6" />
@@ -202,7 +202,7 @@ const BookingDetailsModal = ({ isOpen, onClose, booking, image_base_url }) => {
                   )}
 
                   {/* Booking ID */}
-                  <div className="p-4 bg-white rounded-lg border border-green-200">
+                  <div className="p-2 md:p-4 bg-white rounded-lg border border-green-200">
                     <div className="flex items-center gap-4">
                       <div className="p-3 rounded-lg bg-purple-100 text-purple-600">
                         <Ticket className="w-6 h-6" />
@@ -226,7 +226,7 @@ const BookingDetailsModal = ({ isOpen, onClose, booking, image_base_url }) => {
               <ZoomableSeatsLayout_2 selectedSeats={bookedSeats} />
 
               {/* Payment Status */}
-              <div className="bg-green-50 rounded-xl p-6">
+              <div className="bg-green-50 rounded-xl p-3 md:p-6">
                 {/* Success Message */}
                 {isPaid && (
                   <div className="mt-6 p-4 bg-green-100 rounded-lg border border-green-200">

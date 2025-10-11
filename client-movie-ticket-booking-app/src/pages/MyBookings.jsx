@@ -139,41 +139,32 @@ const MyBookings = () => {
             />
             <div className="flex flex-col p-4">
               <p className="text-lg font-semibold">{item.show.movie.title}</p>
-              <p className="text-sm text-gray-400">{timeFormat(item.show.movie.runtime)}</p>
-              <p className="text-sm text-gray-400 mt-auto">{dateFormat(item.show.showDateTime)}</p>
+              {/* <p className="text-sm text-gray-400">{timeFormat(item.show.movie.runtime)}</p> */}
+              <p className="text-sm text-gray-400 mt-auto">Suất chiếu: {dateFormat(item.show.showDateTime)}</p>
             </div>
           </div>
 
-          <div className="flex flex-col md:items-end md:text-right justify-between p-4 w-3/10">
+          <div className="flex flex-col max-md:flex-row md:items-end md:text-right justify-between p-4 w-full md:w-3/10">
             <div className="text-sm">
               <p className="text-2xl font-semibold mb-3">
                 {item.amount}
                 {currency}
               </p>
-              {/* <p>
-                <span className="text-gray-400">Tổng số vé: </span>
-                {item.bookedSeats.length}
-              </p> */}
+
               <p>
                 <span className="text-gray-400">Số ghế: </span>
                 {item.bookedSeats.join(", ")}
               </p>
-              <p className={item.isPaid ? "text-green-500" : "text-red-500"}>
+              <p className={`${item.isPaid ? "text-green-500" : "text-red-500"} max-md:hidden`}>
                 <span className="text-gray-400">Trạng thái: </span>
                 {item.isPaid ? "Đã thanh toán" : "Chưa thanh toán"}
               </p>
-              {/* {item.isPaid && item.paymentMethod && (
-                <p className="text-blue-500">
-                  <span className="text-gray-400">Phương thức: </span>
-                  {item.paymentMethod.charAt(0).toUpperCase() + item.paymentMethod.slice(1)}
-                </p>
-              )} */}
             </div>
             <div className="flex items-center gap-4">
               {!item.isPaid ? (
                 <button
                   onClick={() => openCheckout(item)}
-                  className="bg-primary px-4 py-1.5 mb-3 text-sm rounded-full
+                  className="bg-primary px-4 py-3 md:py-1.5 mb-3 text-sm rounded-full
               font-medium cursor-pointer text-white hover:bg-primary-dull transition-colors"
                 >
                   Thanh toán
@@ -181,7 +172,7 @@ const MyBookings = () => {
               ) : (
                 <button
                   onClick={() => openDetails(item)}
-                  className="bg-green-500 px-4 py-1.5 mt-3 text-sm rounded-full
+                  className="bg-green-500 px-4 py-3 md:py-1.5 mt-3 text-sm rounded-full
               font-medium cursor-pointer text-white hover:bg-green-600 transition-colors"
                 >
                   Chi tiết

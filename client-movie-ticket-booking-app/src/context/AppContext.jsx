@@ -4,7 +4,6 @@ import axios from "axios";
 import { createContext, useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
-// import { useNotificationSocket } from "../hooks/useNotificationSocket";
 import { useRef } from "react";
 import io from "socket.io-client";
 
@@ -21,11 +20,16 @@ export const AppProvider = ({ children }) => {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const socketRef = useRef(null);
+  const broadcastChannelRef = useRef(null);
+  const timeoutIdRef = useRef(null); // 👈 Thêm ref cho timeout
 
   const { user } = useUser();
   const { getToken } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+
+  let cachedToken = null;
+  let lastTokenTime = 0;
 
   // Fetch notifications từ API
   const fetchNotifications = async () => {
@@ -41,7 +45,6 @@ export const AppProvider = ({ children }) => {
         const notifs = response.data.metadata.data;
         setNotifications(notifs);
 
-        // Đếm số thông báo chưa đọc
         const userId = user?.id;
         if (userId) {
           const unread = notifs.filter((n) => !n.isSeen).length;
@@ -53,53 +56,161 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  // Socket.IO connection
+  // 👉 Hàm lấy token luôn đảm bảo còn hạn
+  async function getValidClerkToken() {
+    const now = Date.now();
+    const tokenAge = now - lastTokenTime;
+
+    if (cachedToken && tokenAge < 1700_000) {
+      return cachedToken;
+    }
+
+    const token = await getToken({ template: "myJwtTemplate" });
+    console.log("Refreshed token");
+    cachedToken = token;
+    lastTokenTime = now;
+    return token;
+  }
+
+  // 👉 Socket.IO connection với Broadcast Channel
   useEffect(() => {
+    // Khai báo các handler functions trước
+    let messageHandler = null;
+    let requestHandler = null;
+
     const initSocket = async () => {
-      // Cleanup socket cũ nếu có
-      if (socketRef.current) {
-        socketRef.current.removeAllListeners();
-        socketRef.current.disconnect();
-      }
+      // Tạo Broadcast Channel
+      broadcastChannelRef.current = new BroadcastChannel("socket_management");
+      let shouldCreateSocket = true;
 
-      const token = await getToken({ template: "myJwtTemplate" });
-      const socket = io(BASE_URL, {
-        auth: { token },
-        transports: ["websocket", "polling"],
-        reconnection: true,
-        reconnectionDelay: 1000,
-        reconnectionDelayMax: 5000,
-        reconnectionAttempts: 5,
-      });
-      socketRef.current = socket;
-
-      socket.on("connect", () => {
-        console.log("✅ Socket connected:", socket.id);
-      });
-
-      socket.on("notification:new", (notification) => {
-        setNotifications((prev) => [notification, ...prev]);
-        setUnreadCount((prev) => prev + 1);
-      });
-
-      socket.on("connect_error", async (error) => {
-        console.error("❌ Socket error:", error.message);
-        if (error.message.includes("jwt") || error.message.includes("unauthorized")) {
-          const newToken = await getToken({ template: "myJwtTemplate" });
-          socket.auth = { token: newToken };
-          socket.connect(); // reconnect đúng
+      messageHandler = (msg) => {
+        if (msg.type === "SOCKET_EXISTS" && msg.userId === user?.id) {
+          // Đã có socket trong tab khác, không tạo mới
+          console.log("✅ Socket already exists in another tab, skipping creation");
+          shouldCreateSocket = false;
+          if (timeoutIdRef.current) {
+            clearTimeout(timeoutIdRef.current);
+          }
         }
+
+        if (msg.type === "SOCKET_CREATED" && msg.userId === user?.id) {
+          // Tab khác vừa tạo socket, không tạo nữa
+          console.log("✅ Another tab just created socket, skipping creation");
+          shouldCreateSocket = false;
+          if (timeoutIdRef.current) {
+            clearTimeout(timeoutIdRef.current);
+          }
+        }
+      };
+
+      broadcastChannelRef.current.addEventListener("message", messageHandler);
+
+      // Yêu cầu thông tin từ các tab khác
+      broadcastChannelRef.current.postMessage({
+        type: "SOCKET_INIT_REQUEST",
+        userId: user?.id,
       });
 
-      socket.on("disconnect", (reason) => {
-        console.log("⚠️ Socket disconnected:", reason);
-        // Socket.IO tự reconnect, không cần initSocket lại
-      });
+      // Đợi 150ms để nhận phản hồi từ tab khác
+      timeoutIdRef.current = setTimeout(async () => {
+        if (shouldCreateSocket && user?.id) {
+          console.log("🔄 Creating new socket connection...");
+
+          // Cleanup socket cũ nếu có
+          if (socketRef.current) {
+            socketRef.current.removeAllListeners();
+            socketRef.current.disconnect();
+          }
+
+          const token = await getValidClerkToken();
+          const socket = io(BASE_URL, {
+            auth: { token },
+            transports: ["websocket", "polling"],
+            reconnection: true,
+            reconnectionDelay: 500,
+            reconnectionDelayMax: 2000,
+            reconnectionAttempts: 30,
+          });
+          socketRef.current = socket;
+
+          socket.on("connect", () => {
+            console.log("✅ Socket connected:", socket.id);
+            // Thông báo cho các tab khác biết đã tạo socket
+            if (broadcastChannelRef.current) {
+              broadcastChannelRef.current.postMessage({
+                type: "SOCKET_CREATED",
+                userId: user?.id,
+              });
+            }
+          });
+
+          socket.on("notification:new", (notification) => {
+            setNotifications((prev) => [notification, ...prev]);
+            setUnreadCount((prev) => prev + 1);
+          });
+
+          socket.on("reconnect_attempt", async () => {
+            const token = await getValidClerkToken();
+            socket.auth = { token };
+          });
+
+          socket.on("connect_error", async (error) => {
+            console.log("❌ Socket connection error:", error);
+            const newToken = await getValidClerkToken();
+            socket.auth = { token: newToken };
+            socket.connect();
+          });
+
+          socket.on("disconnect", async (reason) => {
+            console.log("⚠️ Socket disconnected:", reason);
+            if (reason === "io server disconnect" || reason === "transport close") {
+              const newToken = await getValidClerkToken();
+              socket.auth = { token: newToken };
+              socket.connect();
+            }
+          });
+        }
+      }, 150);
+
+      // Handler cho các SOCKET_INIT_REQUEST từ tab khác
+      requestHandler = (msg) => {
+        if (msg.type === "SOCKET_INIT_REQUEST" && msg.userId === user?.id) {
+          // Nếu tab này đã có socket, thông báo cho tab mới biết
+          if (socketRef.current && socketRef.current.connected) {
+            broadcastChannelRef.current.postMessage({
+              type: "SOCKET_EXISTS",
+              userId: user?.id,
+            });
+          }
+        }
+      };
+
+      broadcastChannelRef.current.addEventListener("message", requestHandler);
     };
 
-    if (user?.id) initSocket();
+    if (user?.id) {
+      initSocket();
+    }
 
     return () => {
+      // Cleanup timeout
+      if (timeoutIdRef.current) {
+        clearTimeout(timeoutIdRef.current);
+      }
+
+      // Cleanup broadcast channel
+      if (broadcastChannelRef.current) {
+        if (messageHandler) {
+          broadcastChannelRef.current.removeEventListener("message", messageHandler);
+        }
+        if (requestHandler) {
+          broadcastChannelRef.current.removeEventListener("message", requestHandler);
+        }
+        broadcastChannelRef.current.close();
+      }
+
+      // Chỉ disconnect socket nếu đây là tab cuối cùng
+      // Có thể thêm logic kiểm tra tab count ở đây nếu muốn
       if (socketRef.current) {
         socketRef.current.removeAllListeners();
         socketRef.current.disconnect();
@@ -107,6 +218,7 @@ export const AppProvider = ({ children }) => {
     };
   }, [user?.id]);
 
+  // Các hàm còn lại giữ nguyên
   const markAllAsSeen = async () => {
     try {
       console.log("markAllAsSeen");
@@ -173,7 +285,7 @@ export const AppProvider = ({ children }) => {
 
       if (!data.metadata.isAdmin && location.pathname.startsWith("/admin")) {
         navigate("/");
-        toast.error("YOu are not authorized to access admin dashboard");
+        toast.error("You are not authorized to access admin dashboard");
       }
     } catch (error) {
       console.error(error);
@@ -217,11 +329,12 @@ export const AppProvider = ({ children }) => {
     if (user) {
       fetchIsAdmin();
       fetchFavoriteMovies();
+      fetchNotifications();
     }
   }, [user]);
 
   const value = {
-    axios, //
+    axios,
     fetchIsAdmin,
     user,
     getToken,
@@ -236,7 +349,9 @@ export const AppProvider = ({ children }) => {
     setUnreadCount,
     markAllAsSeen,
     markAsRead,
+    socket: socketRef.current,
   };
+
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
 

@@ -105,7 +105,14 @@ const LoginButton = ({ onClick }) => (
 const UserMenu = ({ onNavigate }) => (
   <UserButton>
     <UserButton.MenuItems>
-      <UserButton.Action label="My Bookings" labelIcon={<TicketPlus width={15} />} onClick={() => onNavigate("/my-bookings")} />
+      <UserButton.Action
+        label="My Bookings"
+        labelIcon={<TicketPlus width={15} />}
+        onClick={() => {
+          scrollTo(0, 0);
+          onNavigate("/my-bookings");
+        }}
+      />
     </UserButton.MenuItems>
   </UserButton>
 );

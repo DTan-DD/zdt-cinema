@@ -84,6 +84,10 @@ const releaseSeatsAndDeleteBooking = inngest.createFunction({ id: "release-seats
     const bookingId = event.data.bookingId;
     const booking = await Booking.findById(bookingId);
 
+    if (!booking) {
+      console.warn(`[Inngest] Booking ${bookingId} not found.`);
+      return; // hoặc throw nếu cần
+    }
     // If payment is not made, release seats and delete booking
     if (!booking.isPaid) {
       const show = await Show.findById(booking.show);
@@ -153,11 +157,9 @@ const sendShowReminders = inngest.createFunction(
 
     // Prepare reminder tasks
     const reminderTasks = await step.run("prepare-reminder-tasks", async () => {
-      const shows = await Show.find(
-        {
-          showDateTime: { $gte: windowStart, $lte: in8Hours },
-        }.populate("movie")
-      );
+      const shows = await Show.find({
+        showDateTime: { $gte: windowStart, $lte: in8Hours },
+      }).populate("movie");
 
       const tasks = [];
       for (const show of shows) {
