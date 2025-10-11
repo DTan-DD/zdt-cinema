@@ -122,7 +122,7 @@ const MyBookings = () => {
       <div>
         <BlurCircle bottom="0px" left="600px" />
       </div>
-      <h1 className="text-lg font-semibold mb-4">My bookings</h1>
+      <h1 className="text-lg font-semibold mb-4">Các vé đã đặt:</h1>
 
       {bookings.map((item, index) => (
         <div
@@ -139,24 +139,24 @@ const MyBookings = () => {
             />
             <div className="flex flex-col p-4">
               <p className="text-lg font-semibold">{item.show.movie.title}</p>
-              {/* <p className="text-sm text-gray-400">{timeFormat(item.show.movie.runtime)}</p> */}
-              <p className="text-sm text-gray-400 mt-auto">Suất chiếu: {dateFormat(item.show.showDateTime)}</p>
+              <p className="text-sm text-yellow-300 mt-2">{item.show.cinema.name}</p>
+              <p className="text-sm text-gray-200 mt-auto">Suất chiếu: {dateFormat(item.show.showDateTime)}</p>
             </div>
           </div>
 
           <div className="flex flex-col max-md:flex-row md:items-end md:text-right justify-between p-4 w-full md:w-3/10">
             <div className="text-sm">
               <p className="text-2xl font-semibold mb-3">
-                {item.amount}
+                {item.amount.toLocaleString("vi-VN")}
                 {currency}
               </p>
 
-              <p>
-                <span className="text-gray-400">Số ghế: </span>
+              <p className="text-green-500">
+                <span className="text-gray-200">Số ghế: </span>
                 {item.bookedSeats.join(", ")}
               </p>
               <p className={`${item.isPaid ? "text-green-500" : "text-red-500"} max-md:hidden`}>
-                <span className="text-gray-400">Trạng thái: </span>
+                <span className="text-gray-200">Trạng thái: </span>
                 {item.isPaid ? "Đã thanh toán" : "Chưa thanh toán"}
               </p>
             </div>
@@ -164,7 +164,7 @@ const MyBookings = () => {
               {!item.isPaid ? (
                 <button
                   onClick={() => openCheckout(item)}
-                  className="bg-primary px-4 py-3 md:py-1.5 mb-3 text-sm rounded-full
+                  className="bg-primary px-4 py-3 md:py-1.5 mt-3 text-sm rounded-full
               font-medium cursor-pointer text-white hover:bg-primary-dull transition-colors"
                 >
                   Thanh toán
@@ -172,7 +172,7 @@ const MyBookings = () => {
               ) : (
                 <button
                   onClick={() => openDetails(item)}
-                  className="bg-green-500 px-4 py-3 md:py-1.5 mt-3 text-sm rounded-full
+                  className="bg-green-500 px-6 py-3  md:py-3 md:mt-3 text-sm rounded-full
               font-medium cursor-pointer text-white hover:bg-green-600 transition-colors"
                 >
                   Chi tiết

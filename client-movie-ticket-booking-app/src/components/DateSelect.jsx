@@ -236,9 +236,9 @@ const DateSelect = ({ dateTime, id }) => {
                                 </div>
 
                                 {isSelected && (
-                                  <div className="absolute  -top-1 -right-1">
-                                    <div className="bg-white border-2  border-green-700 text-primary rounded-full p-1">
-                                      <CheckIcon className="w-3 h-3" />
+                                  <div className="absolute -top-1 -right-1">
+                                    <div className="bg-white border-2 text-white rounded-full ">
+                                      <CheckCircleIcon className="w-5 h-5 text-green-600" />
                                     </div>
                                   </div>
                                 )}
