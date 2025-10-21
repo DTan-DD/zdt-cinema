@@ -166,10 +166,10 @@ const AddShows = () => {
 
   return nowPlayingMovies.length > 0 ? (
     <>
-      <Title text1="List" text2="Shows" />
+      <Title text1="Danh sách" text2="Shows" />
 
       {/* Movies Grid */}
-      <p className="mt-10 text-lg font-medium">Now Playing Movies</p>
+      <p className="mt-10 text-lg font-medium">Danh sách phim</p>
       <div className="overflow-x-auto pb-4">
         <div className="group flex flex-wrap gap-4 mt-4 w-max">
           {nowPlayingMovies.map((movie) => (
@@ -207,18 +207,18 @@ const AddShows = () => {
       {/* Show Price Input */}
       <div className="mt-8">
         <label htmlFor="" className="block text-sm font-medium mb-2">
-          Show Price
+          Giá vé
         </label>
         <div className="inline-flex items-center gap-2 border border-gray-600 px-3 py-2 rounded-md">
           <p className="text-gray-400 text-sm">{currency}</p>
-          <input type="number" className="outline-none bg-transparent" min={0} value={showPrice} onChange={(e) => setShowPrice(e.target.value)} placeholder="Enter show price" />
+          <input type="number" className="outline-none bg-transparent" min={0} value={showPrice} onChange={(e) => setShowPrice(e.target.value)} placeholder="Nhập giá vé" />
         </div>
       </div>
 
       {/* Cinema and DateTime Selection */}
       <div className="mt-6 space-y-4">
         <div>
-          <label className="block text-sm font-medium mb-2">Add Shows for Cinema</label>
+          <label className="block text-sm font-medium mb-2">Chọn rạp chiếu</label>
 
           <div className="space-y-3">
             {/* Cinema Dropdown */}
@@ -228,7 +228,7 @@ const AddShows = () => {
               onChange={(e) => setSelectedCinema(e.target.value)}
             >
               <option value="" className="bg-transparent text-black" disabled>
-                Select a cinema
+                Chọn rạp chiếu
               </option>
               {cinemas.map((c) => (
                 <option key={c._id} value={c._id} className="bg-transparent text-black">
@@ -246,7 +246,7 @@ const AddShows = () => {
                 onChange={(e) => setDateTimeInput(e.target.value)}
               />
               <button className="bg-primary/80 text-white px-4 py-2 text-sm rounded-lg hover:bg-primary transition-colors" onClick={handleAddShowTime}>
-                Add Show Time
+                Thêm suất chiếu
               </button>
             </div>
           </div>
@@ -256,7 +256,7 @@ const AddShows = () => {
       {/* Display Selected Shows by Cinema */}
       {Object.keys(cinemaShowsData).length > 0 && (
         <div className="mt-8">
-          <h2 className="text-lg font-medium mb-4">Selected Shows by Cinema</h2>
+          <h2 className="text-lg font-medium mb-4">Các suất chiếu đã chọn:</h2>
           <div className="space-y-4">
             {Object.entries(cinemaShowsData).map(([cinemaId, dates]) => {
               const cinema = cinemas.find((c) => c._id === cinemaId);
@@ -265,7 +265,7 @@ const AddShows = () => {
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="font-medium text-primary">{cinema?.name}</h3>
                     <button onClick={() => handleRemoveCinema(cinemaId)} className="text-red-500 hover:text-red-700 text-sm">
-                      Remove Cinema
+                      Xóa tất cả
                     </button>
                   </div>
 
@@ -318,7 +318,7 @@ const AddShows = () => {
             : "bg-primary text-white hover:bg-primary/80 cursor-pointer"
         }`}
       >
-        {addingShow ? "Adding..." : "Add Show"}
+        {addingShow ? "Đang thêm..." : "Thêm suất chiếu"}
       </button>
     </>
   ) : (

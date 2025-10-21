@@ -16,10 +16,11 @@ export default function SearchPage() {
 
   const searchMovies = async () => {
     if (!query.trim()) return;
-
     setLoading(true);
+
     try {
-      const { data } = await axios.get(`/v1/api/movies/search?search=${query}`);
+      const safeQuery = encodeURIComponent(query);
+      const { data } = await axios.get(`/v1/api/movies/search?search=${safeQuery}`);
       setResults(data.metadata.movies || []);
     } catch (error) {
       console.error(error);
@@ -43,7 +44,7 @@ export default function SearchPage() {
         <div className="relative mb-60 my-40 px-6 md:px-16 lg:px-40 xl:px-40 overflow-hidden min-h-[80vh]">
           <BlurCircle top="150px" left="0px" />
           <BlurCircle top="50px" left="50px" />
-          <h1 className="text-lg font-medium my-4">
+          <h1 className="text-lg text-white font-medium my-4">
             Kết quả tìm kiếm cho "{query}": {results.length} phim
           </h1>
           <div className="flex flex-wrap gap-8 max-sm:justify-center">

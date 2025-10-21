@@ -27,9 +27,13 @@ import movieRouter from "./routes/movie.routes.js";
 import { rateLimitMiddleware } from "./middleware/rateLimitV2.middleware.js";
 import notificationRouter from "./routes/notification.routes.js";
 // import "./services/workers/notificationWorker.service.js";
-import "./services/workers/workerRabbitMq.service.js";
+// import "./services/workers/workerRabbitMq.service.js";
 import socketRouter from "./routes/socket.routes.js";
-// import testRouter from "./test/testNotification.js";
+import { startWorkers } from "./services/workers/workerManager.service.js";
+
+import testRouter from "./test/testNotification.js";
+import dlqAdminRoutes from "./routes/dlqAdmin.routes.js";
+
 const app = express();
 dotenv.config();
 app.use(express.json());
@@ -61,6 +65,9 @@ app.use((req, res, next) => {
   }
 })();
 
+// Start workers
+startWorkers().catch(console.error);
+
 // Middleware
 app.use("/v1/api/", rateLimitMiddleware);
 
@@ -81,7 +88,9 @@ app.use("/v1/api/queue", queueDashboard);
 app.use("/v1/api/notifications", notificationRouter);
 app.use("/v1/api/socket", socketRouter);
 
-// app.use("/api", testRouter);
+app.use("/api", testRouter);
+// Thêm routes quản lý DLQ (cần authentication trong thực tế)
+app.use("/api/admin/dlq", dlqAdminRoutes);
 
 // handing error
 app.use((req, res, next) => {

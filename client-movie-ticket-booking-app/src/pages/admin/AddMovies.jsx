@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-// import { dummyShowsData } from "../../assets/assets";
+import { useEffect, useState } from "react";
 import Loading from "../../components/Loading";
 import Title from "../../components/admin/Title";
 import { CheckIcon, DeleteIcon, StarIcon } from "lucide-react";
@@ -10,17 +9,9 @@ import toast from "react-hot-toast";
 const AddMovies = () => {
   const { axios, getToken, user, image_base_url } = useAppContext();
 
-  const currency = import.meta.env.VITE_CURRENCY;
   const [nowPlayingMovies, setNowPlayingMovies] = useState([]);
-  const [cinemas, setCinemas] = useState([]);
   const [selectedMovie, setSelectedMovie] = useState(null);
-  const [showPrice, setShowPrice] = useState("");
   const [addingShow, setAddingShow] = useState(false);
-
-  // New state structure for cinema and shows selection
-  const [cinemaShowsData, setCinemaShowsData] = useState({});
-  const [selectedCinema, setSelectedCinema] = useState("");
-  const [dateTimeInput, setDateTimeInput] = useState("");
 
   const fetchNowPlayingMovies = async () => {
     try {
@@ -35,80 +26,9 @@ const AddMovies = () => {
     }
   };
 
-  const fetchCinemas = async () => {
-    try {
-      const { data } = await axios.get("/v1/api/cinemas/all");
-      if (data.success) {
-        setCinemas(data.metadata.cinemas);
-      }
-    } catch (error) {
-      console.error("Error fetching cinemas: ", error);
-    }
-  };
-
-  const handleAddShowTime = () => {
-    if (!selectedCinema || !dateTimeInput) {
-      toast.error("Please select a cinema and datetime");
-      return;
-    }
-
-    const [date, time] = dateTimeInput.split("T");
-    if (!date || !time) return;
-
-    setCinemaShowsData((prev) => {
-      const cinemaData = prev[selectedCinema] || {};
-      const dateData = cinemaData[date] || [];
-
-      if (!dateData.includes(time)) {
-        return {
-          ...prev,
-          [selectedCinema]: {
-            ...cinemaData,
-            [date]: [...dateData, time].sort(),
-          },
-        };
-      }
-      return prev;
-    });
-
-    // Clear datetime input after adding
-    setDateTimeInput("");
-  };
-
-  const handleRemoveTime = (cinemaId, date, time) => {
-    setCinemaShowsData((prev) => {
-      const cinemaData = { ...prev[cinemaId] };
-      const updatedTimes = cinemaData[date].filter((t) => t !== time);
-
-      if (updatedTimes.length === 0) {
-        delete cinemaData[date];
-      } else {
-        cinemaData[date] = updatedTimes;
-      }
-
-      if (Object.keys(cinemaData).length === 0) {
-        const { [cinemaId]: _, ...rest } = prev;
-        return rest;
-      }
-
-      return {
-        ...prev,
-        [cinemaId]: cinemaData,
-      };
-    });
-  };
-
-  const handleRemoveCinema = (cinemaId) => {
-    setCinemaShowsData((prev) => {
-      const { [cinemaId]: _, ...rest } = prev;
-      return rest;
-    });
-  };
-
   const handleSubmit = async () => {
     try {
       setAddingShow(true);
-
       if (!selectedMovie) {
         toast.error("Please select a movie");
         return;
@@ -117,7 +37,6 @@ const AddMovies = () => {
       const payload = {
         movieId: selectedMovie,
       };
-
       const { data } = await axios.post("/v1/api/movies/add-movie", payload, {
         headers: { Authorization: `Bearer ${await getToken()}` },
       });
@@ -126,10 +45,6 @@ const AddMovies = () => {
         toast.success("Thêm phim thành công");
         // Reset form
         setSelectedMovie(null);
-        setCinemaShowsData({});
-        setShowPrice("");
-        setSelectedCinema("");
-        setDateTimeInput("");
         fetchNowPlayingMovies();
       } else {
         toast.error(data.message);
@@ -145,16 +60,15 @@ const AddMovies = () => {
   useEffect(() => {
     if (user) {
       fetchNowPlayingMovies();
-      fetchCinemas();
     }
   }, [user]);
 
   return nowPlayingMovies.length > 0 ? (
     <>
-      <Title text1="List" text2="Shows" />
+      <Title text1="Danh sách" text2="Phim chưa thêm" />
 
       {/* Movies Grid */}
-      <p className="mt-10 text-lg font-medium">Now Playing Movies</p>
+      <p className="mt-10 text-lg font-medium">Danh sách phim</p>
       <div className="overflow-x-auto pb-4">
         <div className="group flex flex-wrap gap-4 mt-4 w-max">
           {nowPlayingMovies.map((movie) => (
@@ -195,7 +109,7 @@ const AddMovies = () => {
         disabled={addingShow || !selectedMovie}
         className={`px-8 py-2 mt-6 rounded transition-all ${addingShow || !selectedMovie ? "bg-gray-600 cursor-not-allowed opacity-50" : "bg-primary text-white hover:bg-primary/80 cursor-pointer"}`}
       >
-        {addingShow ? "Adding..." : "Add Movie"}
+        {addingShow ? "Đang thêm..." : "Thêm phim"}
       </button>
     </>
   ) : (

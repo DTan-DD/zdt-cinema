@@ -6,6 +6,7 @@ import Title from "../../components/admin/Title";
 import EditCinemaModal from "../../components/admin/EditCinemaModal";
 import ConfirmDeleteModal from "../../components/admin/ConfirmDeleteModal";
 import CinemaDetailModal from "../../components/admin/CinemaDetailModal";
+import AdvancedPagination from "../../components/Pagination";
 
 const ListCinemas = () => {
   const { axios, getToken, user } = useAppContext();
@@ -183,7 +184,7 @@ const ListCinemas = () => {
 
       {/* Search Result Info */}
       {searchTerm && (
-        <div className="mb-4 text-sm text-gray-600">
+        <div className="mb-4 text-sm text-gray-100">
           <span>Kết quả tìm kiếm cho: "{searchTerm}"</span>
         </div>
       )}
@@ -248,37 +249,7 @@ const ListCinemas = () => {
       {cinemas.length === 0 && !loading && <div className="text-center py-8 text-gray-500">{searchTerm ? "Không tìm thấy rạp chiếu nào." : "Chưa có rạp chiếu nào."}</div>}
 
       {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex justify-center mt-6">
-          <nav className="flex items-center space-x-2">
-            <button
-              onClick={() => paginate(currentPage - 1)}
-              disabled={currentPage === 1}
-              className={`px-3 py-2 rounded ${currentPage === 1 ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-white border border-gray-300 text-gray-500 hover:bg-gray-50"}`}
-            >
-              Trước
-            </button>
-
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((number) => (
-              <button
-                key={number}
-                onClick={() => paginate(number)}
-                className={`px-3 py-2 rounded ${currentPage === number ? "bg-primary text-white" : "bg-white border border-gray-300 text-gray-500 hover:bg-gray-50"}`}
-              >
-                {number}
-              </button>
-            ))}
-
-            <button
-              onClick={() => paginate(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className={`px-3 py-2 rounded ${currentPage === totalPages ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-white border border-gray-300 text-gray-500 hover:bg-gray-50"}`}
-            >
-              Sau
-            </button>
-          </nav>
-        </div>
-      )}
+      <AdvancedPagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
 
       {/* Modals */}
       {showEditModal && (

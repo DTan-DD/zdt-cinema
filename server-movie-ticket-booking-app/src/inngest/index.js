@@ -118,27 +118,27 @@ const sendBookingConfirmationEmail = inngest.createFunction({ id: "send-booking-
 
   await sendEmail_V2({
     to: booking.user.email,
-    subject: `Payment Confirmation: "${booking.show.movie.title}" booked!`,
+    subject: `Thư xác nhận vé cho bộ phim: "${booking.show.movie.title}" đã được thanh toán!`,
     body: `
     <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-      <h2>Hi ${booking.user.name},</h2>
+      <h2>Xin chào ${booking.user.name},</h2>
       <p>
-        Your booking for 
+        Vé cho bộ phim: 
         <strong style="color: #F84565;">"${booking.show.movie.title}"</strong> 
-        is confirmed.
+        đã được xác nhận.
       </p>
 
       <p>
-        <strong>Date:</strong> 
-        ${new Date(booking.show.showDateTime).toLocaleDateString("en-US", { timeZone: "Asia/Ho_Chi_Minh" })}
+        <strong>Ngày:</strong> 
+        ${new Date(booking.show.showDateTime).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}
         <br/>
-        <strong>Time:</strong> 
-        ${new Date(booking.show.showDateTime).toLocaleTimeString("en-US", { timeZone: "Asia/Ho_Chi_Minh" })}
+        <strong>Giờ:</strong> 
+        ${new Date(booking.show.showDateTime).toLocaleTimeString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}
       </p>
 
-      <p>Enjoy the show! 🍿</p>
+      <p>Hãy tận hưởng bộ phim yêu thích cùng DiTi Cinema! 🍿</p>
       <p>
-        Thanks for booking with us!<br/>
+        Cảm ơn bạn đã lựa chọn DiTi Cinema!<br/>
         — DiTi Cinema Team
       </p>
     </div>
@@ -210,7 +210,7 @@ const sendShowReminders = inngest.createFunction(
 
               <p>It starts in approximately <strong>8 hours</strong> - make sure you're ready to be there!</p>
               <p>
-                Enjoy the show!<br/>
+                Hãy tận hưởng bộ phim yêu thích cùng DiTi Cinema!<br/>
                 — DiTi Cinema Team
               </p>
             </div>`,
@@ -237,14 +237,14 @@ const sendNewShowNotifications = inngest.createFunction({ id: "send-new-show-not
     const subject = `🎬 New show added: ${movieTitle}`;
     const body = `
         <div style="font-family: Arial, sans-serif; padding: 20px ; line-height: 1.6; color: #333;">
-          <h2>Hi ${userName},</h2>
+          <h2>Xin chào ${userName},</h2>
           <h3>
-            A new show has been added: <strong style="color: #F84565;">${movieTitle}</strong> 
+            Có một show mới vừa được thêm: <strong style="color: #F84565;">${movieTitle}</strong> 
           </h3>
-          <p>Visit our website</p>
+          <p>Hãy ghé DiTi Cinema để xem ngay!</p>
           <br/>
           <p>
-            Enjoy the show!<br/>
+            Hãy tận hưởng bộ phim yêu thích cùng DiTi Cinema!<br/>
             — DiTi Cinema Team
           </p>
       `;

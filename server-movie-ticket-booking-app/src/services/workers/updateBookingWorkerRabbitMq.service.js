@@ -6,8 +6,12 @@ import { publishMailJob, publishPaymentJob } from "../queues/queueRabbitMq.servi
 
 export const startUpdateBookingWorker = async () => {
   const { channel, queue } = getChannel("payment");
+  await channel.assertQueue(queueName, {
+    durable: true,
+  });
 
-  //   await channel.assertQueue(queue, { durable: true });
+  // Set prefetch to 1 to ensure only one ack at a time
+  channel.prefetch(1);
 
   console.log("💰 [Worker] Listening on queue:", queue);
 

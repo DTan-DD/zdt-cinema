@@ -1,13 +1,11 @@
 // components/SearchModal.jsx
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { SearchIcon, XIcon, ClockIcon, TrendingUpIcon } from "lucide-react";
+import { SearchIcon, XIcon } from "lucide-react";
 import toast from "react-hot-toast";
 
 const SearchModal = ({ isOpen, onClose }) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-  const [searchHistory, setSearchHistory] = useState([]);
 
   const navigate = useNavigate();
 
@@ -36,7 +34,6 @@ const SearchModal = ({ isOpen, onClose }) => {
   // Clear search and close modal
   const clearSearch = () => {
     setSearchQuery("");
-    setSearchResults([]);
   };
 
   // Close modal and reset state
@@ -44,14 +41,6 @@ const SearchModal = ({ isOpen, onClose }) => {
     clearSearch();
     onClose();
   };
-
-  // Load search history on mount
-  useEffect(() => {
-    const savedHistory = localStorage.getItem("searchHistory");
-    if (savedHistory) {
-      setSearchHistory(JSON.parse(savedHistory));
-    }
-  }, []);
 
   // Close search modal on escape key
   useEffect(() => {

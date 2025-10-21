@@ -64,11 +64,11 @@ export const getDashboardData = async (req, res) => {
     createdAt: { $gte: yesterdayStart, $lte: yesterdayEnd },
   });
 
-  const bookingsGrowth = yesterdayBookings.length ? ((todayBookings - yesterdayBookings.length) / yesterdayBookings.length) * 100 : 100;
+  const bookingsGrowth = yesterdayBookings.length ? ((todayBookings - yesterdayBookings.length) / yesterdayBookings.length) * 100 : 0;
 
   const yesterdayRevenue = yesterdayBookings.filter((b) => b.isPaid).reduce((sum, b) => sum + b.amount, 0);
 
-  const revenueGrowth = yesterdayRevenue ? ((todayRevenue - yesterdayRevenue) / yesterdayRevenue) * 100 : 100;
+  const revenueGrowth = yesterdayRevenue ? ((todayRevenue - yesterdayRevenue) / yesterdayRevenue) * 100 : 0;
 
   const showsGrowth = 0; // TODO: so sánh số show mới
   const usersGrowth = 0; // TODO: so sánh số user mới

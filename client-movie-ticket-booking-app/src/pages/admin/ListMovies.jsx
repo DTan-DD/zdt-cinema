@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import Title from "../../components/admin/Title";
 import EditMovieModal from "../../components/admin/EditMovieModal";
 import ConfirmDeleteModal from "../../components/admin/ConfirmDeleteModal";
+import AdvancedPagination from "../../components/Pagination";
 
 const ListMovies = () => {
   const { axios, getToken, user } = useAppContext();
@@ -221,7 +222,7 @@ const ListMovies = () => {
 
       {/* Search Result Info */}
       {searchTerm && (
-        <div className="mb-4 text-sm text-gray-600">
+        <div className="mb-4 text-sm text-gray-100">
           <span>Kết quả tìm kiếm cho: "{searchTerm}"</span>
         </div>
       )}
@@ -255,7 +256,7 @@ const ListMovies = () => {
                 </td>
                 <td className="p-2 max-w-xs">
                   <div className="font-medium">{movie.title}</div>
-                  <div className="text-xs text-gray-500 truncate">{movie.tagline}</div>
+                  <div className="text-xs text-yellow-500 truncate">{movie.tagline}</div>
                 </td>
                 <td className="p-2">{formatDate(movie.release_date)}</td>
                 <td className="p-2">{movie.runtime} phút</td>
@@ -289,37 +290,7 @@ const ListMovies = () => {
       {movies.length === 0 && !loading && <div className="text-center py-8 text-gray-500">{searchTerm ? "Không tìm thấy phim nào." : "Chưa có phim nào."}</div>}
 
       {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex justify-center mt-6">
-          <nav className="flex items-center space-x-2">
-            <button
-              onClick={() => paginate(currentPage - 1)}
-              disabled={currentPage === 1}
-              className={`px-3 py-2 rounded ${currentPage === 1 ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-white border border-gray-300 text-gray-500 hover:bg-gray-50"}`}
-            >
-              Trước
-            </button>
-
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((number) => (
-              <button
-                key={number}
-                onClick={() => paginate(number)}
-                className={`px-3 py-2 rounded ${currentPage === number ? "bg-primary text-white" : "bg-white border border-gray-300 text-gray-500 hover:bg-gray-50"}`}
-              >
-                {number}
-              </button>
-            ))}
-
-            <button
-              onClick={() => paginate(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className={`px-3 py-2 rounded ${currentPage === totalPages ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-white border border-gray-300 text-gray-500 hover:bg-gray-50"}`}
-            >
-              Sau
-            </button>
-          </nav>
-        </div>
-      )}
+      <AdvancedPagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
 
       {/* Edit Modal */}
       {showEditModal && (

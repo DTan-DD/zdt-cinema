@@ -5,7 +5,8 @@ import { sortObject } from "../../utils/VNPay.js";
 import { paymentQueue } from "../queues/paymentQueue.service.js";
 import PaymentLog from "../../models/paymentLog.model.js";
 import { updateBooking } from "../updateBooking.service.js";
-import { publishPaymentJob } from "../queues/queueRabbitMq.service.js";
+// import { publishPaymentJob } from "../queues/queueRabbitMq.service.js";
+import { publishPaymentJob } from "../queues/queueRabbitMqV2.service.js";
 
 export async function createVNPayPayment({ orderId, amount, req, originUrl }) {
   process.env.TZ = "Asia/Ho_Chi_Minh";

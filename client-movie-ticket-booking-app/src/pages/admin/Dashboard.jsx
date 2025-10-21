@@ -151,9 +151,9 @@ const Dashboard = () => {
             className="px-3
            py-2 border bg-black border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary"
           >
-            <option value="7">Last 7 days</option>
-            <option value="30">Last 30 days</option>
-            <option value="90">Last 90 days</option>
+            <option value="7">7 ngày gần nhất</option>
+            <option value="30">30 ngày gần nhất</option>
+            <option value="90">90 ngày gần nhất</option>
           </select>
 
           <button
@@ -255,7 +255,7 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Top Movies */}
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Top Movies</h3>
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">Top Phim</h3>
             <div className="space-y-4">
               {dashboardData.topMovies?.slice(0, 5).map((movie, index) => (
                 <div key={index} className="flex items-center justify-between">
@@ -264,7 +264,7 @@ const Dashboard = () => {
                       <span className="text-xs font-medium text-primary">#{index + 1}</span>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-900 truncate">{movie.title}</p>
+                      <p className="text-sm font-medium text-gray-900 truncate">{movie.title.length > 40 ? `${movie.title.slice(0, 40)}...` : movie.title}</p>
                       <p className="text-xs text-gray-500">{movie.bookings} bookings</p>
                       <p className="text-sm font-medium text-green-600">
                         {movie.revenue?.toLocaleString()} {currency}
@@ -282,10 +282,10 @@ const Dashboard = () => {
             <div className="space-y-4">
               {Object.entries(dashboardData.showsByStatus || {}).map(([status, count]) => {
                 const statusConfig = {
-                  draft: { label: "Draft", color: "bg-gray-500" },
-                  upcoming: { label: "Upcoming", color: "bg-blue-500" },
-                  showing: { label: "Showing", color: "bg-green-500" },
-                  showed: { label: "Showed", color: "bg-red-500" },
+                  draft: { label: "Nháp", color: "bg-gray-500" },
+                  upcoming: { label: "Sắp chiếu", color: "bg-blue-500" },
+                  showing: { label: "Đang chiếu", color: "bg-green-500" },
+                  showed: { label: "Đã chiếu", color: "bg-red-500" },
                 };
 
                 return (
@@ -303,7 +303,7 @@ const Dashboard = () => {
 
           {/* Recent Bookings */}
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Recent Bookings</h3>
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">Các đơn hàng gần đây</h3>
             <div className="space-y-4">
               {dashboardData.recentBookings?.slice(0, 5).map((booking, index) => (
                 <div key={index} className="flex items-center justify-between">

@@ -4,15 +4,19 @@ import Movie from "../models/movie.model.js";
 import Show from "../models/show.model.js";
 import { inngest } from "../inngest/index.js";
 import { BadRequestError } from "../core/error.response.js";
+import { escapeRegex } from "../utils/index.js";
 
 export const getAllMovies = async (req) => {
   const { filter = "all", sort = "newest", page = 1, limit = 10, search = "" } = req.query;
   const now = new Date();
   let query = {};
 
+  if (search?.length > 100) throw new Error("Search query too long");
+
   // --- Xử lý search tốt hơn ---
   if (search) {
-    query.$or = [{ title: { $regex: search, $options: "i" } }];
+    const safeSearch = escapeRegex(search.trim());
+    query.$or = [{ title: { $regex: safeSearch, $options: "i" } }];
   }
 
   // --- Filter theo trạng thái ---
@@ -41,7 +45,10 @@ export const getAllMovies = async (req) => {
   if (sort === "showTime-desc") sortOption = { "show.startTime": -1 };
 
   // --- Pagination ---
-  const skip = (parseInt(page) - 1) * parseInt(limit);
+  // Filter, Sort, Pagination — như cũ nhưng ép kiểu an toàn hơn
+  const pageNum = Math.max(parseInt(page) || 1, 1);
+  const limitNum = Math.min(parseInt(limit) || 10, 100);
+  const skip = (pageNum - 1) * limitNum;
 
   // --- Query với populate ---
   const [movies, total] = await Promise.all([
@@ -49,7 +56,10 @@ export const getAllMovies = async (req) => {
     Movie.countDocuments(query),
   ]);
 
-  return { movies, pagination: { total, page: parseInt(page), limit: parseInt(limit), totalPages: Math.ceil(total / limit) } };
+  return {
+    movies, //
+    pagination: { total, page: pageNum, limit: limitNum, totalPages: Math.ceil(total / limitNum) },
+  };
 };
 
 export const addMovie = async (req, res) => {
@@ -61,7 +71,7 @@ export const addMovie = async (req, res) => {
   }
   // Fetch movie details, credits, and videos from TMDB API
   const [movieDetailsResponse, movieCreditsResponse, movieVideosResponse] = await Promise.all([
-    axios.get(`https://api.themoviedb.org/3/movie/${movieId}`, {
+    axios.get(`https://api.themoviedb.org/3/movie/${movieId}?region=VN&language=vi-VN`, {
       headers: { Authorization: `Bearer ${process.env.TMDB_API_KEY}` },
     }),
 
@@ -84,7 +94,7 @@ export const addMovie = async (req, res) => {
   const movieDetails = {
     _id: movieId,
     title: movieApiData.title,
-    overview: movieApiData.overview,
+    overview: movieApiData.overview || "Đang cập nhật",
     poster_path: movieApiData.poster_path,
     backdrop_path: movieApiData.backdrop_path || movieApiData.poster_path,
     release_date: movieApiData.release_date,

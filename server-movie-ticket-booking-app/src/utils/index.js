@@ -25,3 +25,7 @@ export const getAdmins = async () => {
   const adminUsers = data.filter((u) => u.privateMetadata?.role === "admin");
   return adminUsers;
 };
+
+export function escapeRegex(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}

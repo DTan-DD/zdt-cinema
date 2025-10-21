@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 
-const ZoomableSeatsLayout = ({ selectedSeats, occupiedSeats, handleSeatClick, screenImage }) => {
+const ZoomableSeatsLayout = ({ selectedSeats, occupiedSeats, handleSeatClick }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [scale, setScale] = useState(1);
   const transformRef = useRef();

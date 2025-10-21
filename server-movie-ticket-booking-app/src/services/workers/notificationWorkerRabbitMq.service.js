@@ -6,6 +6,12 @@ export const startNotificationWorker = async () => {
   const SOCKET_API = `${process.env.RETURNURL}/v1/api/socket/emit` || "http://localhost:3000/v1/api/socket/emit";
   const { channel, queue } = getChannel("noti");
 
+  await channel.assertQueue(queueName, {
+    durable: true,
+  });
+
+  // Set prefetch to 1 to ensure only one ack at a time
+  channel.prefetch(1);
   console.log("🔔 [Worker] Listening for notification jobs...");
 
   channel.consume(

@@ -2,7 +2,8 @@
 import Notification from "../models/notification.model.js";
 // import { io } from "../../socket.js";
 import { notificationQueue } from "./queues/notificationQueue.service.js";
-import { publishNotificationJob } from "./queues/queueRabbitMq.service.js";
+import { publishNotificationJob } from "./queues/queueRabbitMqV2.service.js";
+// import { publishNotificationJob } from "./queues/queueRabbitMq.service.js";
 
 export async function createNotification({ type, title, message, receiverIds, meta = {} }) {
   // Lưu vào MongoDB

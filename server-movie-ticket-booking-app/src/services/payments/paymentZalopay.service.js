@@ -7,7 +7,8 @@ import PaymentLog from "../../models/paymentLog.model.js";
 import { paymentQueue } from "../queues/paymentQueue.service.js";
 import { BadRequestError } from "../../core/error.response.js";
 import { updateBooking } from "../updateBooking.service.js";
-import { publishPaymentJob } from "../queues/queueRabbitMq.service.js";
+// import { publishPaymentJob } from "../queues/queueRabbitMq.service.js";
+import { publishPaymentJob } from "../queues/queueRabbitMqV2.service.js";
 
 /**
  * Tạo đơn hàng trên ZaloPay

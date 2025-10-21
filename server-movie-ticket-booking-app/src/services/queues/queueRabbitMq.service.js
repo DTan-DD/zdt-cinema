@@ -1,5 +1,5 @@
 // queues/paymentQueue.js
-import { getChannel } from "../../../configs/rabbitmq.config.js";
+import { getChannel, publishToQueue } from "../../../configs/rabbitmq.config.js";
 
 /**
  * 🔹 Hàm publish job vào hàng đợi payment_queue
@@ -62,3 +62,25 @@ export const publishNotificationJob = async (data) => {
     console.error("❌ [RabbitMQ] publishNotiJob error:", error.message);
   }
 };
+
+/**
+ * 📨 Publish Notification Job to RabbitMQ
+ * @param {Object} data - Dữ liệu thông báo (notifId, receiverIds, type, title, message, meta)
+ */
+// export const publishNotificationJob = async (data) => {
+//   try {
+//     if (!data || !data.notifId) {
+//       console.warn("⚠️ [RabbitMQ] Invalid notification data:", data);
+//       return;
+//     }
+
+//     await publishToQueue("noti", data);
+
+//     console.log("✅ [RabbitMQ] Notification job queued:", {
+//       notifId: data.notifId,
+//       receiverIds: data.receiverIds,
+//     });
+//   } catch (error) {
+//     console.error("❌ [RabbitMQ] publishNotificationJob error:", error.message);
+//   }
+// };

@@ -81,7 +81,7 @@ const MovieDetails = ({ isReleased = true }) => {
 
         <div className="relative flex flex-col gap-3">
           <BlurCircle top="-100px" left="-100px" />
-          <p className="text-primary uppercase tracking-wider text-sm font-medium">ENGLISH</p>
+          <p className="text-primary uppercase tracking-wider text-sm font-medium">Phụ đề</p>
           <h1 className="text-4xl font-semibold max-w-96 text-balance">{show.movie.title}</h1>
 
           <div className="flex items-center gap-2 text-gray-300">
@@ -178,7 +178,7 @@ const MovieDetails = ({ isReleased = true }) => {
             {show.movie.casts.slice(0, 12).map((cast, index) => (
               <div key={index} className="flex flex-col items-center text-center transition-transform hover:scale-105">
                 <img src={image_base_url + cast.profile_path} alt={cast.name} className="rounded-full h-16 md:h-24 aspect-square object-cover shadow-md hover:shadow-lg transition-shadow" />
-                <p className="font-medium text-xs md:text-sm mt-3 line-clamp-1">{cast.name}</p>
+                <p className="font-medium text-xs md:text-sm mt-3 line-clamp-1">{cast.name.length > 15 ? cast.name.slice(0, 15) + "..." : cast.name}</p>
               </div>
             ))}
           </div>

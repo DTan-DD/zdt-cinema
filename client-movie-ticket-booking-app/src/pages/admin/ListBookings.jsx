@@ -5,6 +5,7 @@ import dateFormat from "../../lib/dateFormat";
 import { useAppContext } from "../../context/AppContext";
 import EditBookingModal from "../../components/admin/EditBookingModal";
 import toast from "react-hot-toast";
+import AdvancedPagination from "../../components/Pagination";
 
 const ListBookings = () => {
   const currency = import.meta.env.VITE_CURRENCY;
@@ -225,7 +226,7 @@ const ListBookings = () => {
       </div>
 
       {/* Pagination */}
-      {totalPages > 1 && (
+      {/* {totalPages > 1 && (
         <div className="flex justify-center mt-6">
           <nav className="flex items-center space-x-2">
             <button
@@ -255,7 +256,8 @@ const ListBookings = () => {
             </button>
           </nav>
         </div>
-      )}
+      )} */}
+      <AdvancedPagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
 
       {/* Edit Modal */}
       {showEditModal && (

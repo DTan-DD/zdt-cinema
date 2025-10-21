@@ -8,7 +8,12 @@ export const startSendMailWorker = async () => {
 
   //   await channel.assertQueue(queue, { durable: true });
   const { channel, queue } = getChannel("mail");
+  await channel.assertQueue(queueName, {
+    durable: true,
+  });
 
+  // Set prefetch to 1 to ensure only one ack at a time
+  channel.prefetch(1);
   console.log("📨 [Worker] Listening for sendMail jobs...");
 
   channel.consume(
