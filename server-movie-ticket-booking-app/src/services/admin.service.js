@@ -55,7 +55,7 @@ export const getDashboardData = async (req, res) => {
     totalSeatsBooked += bookedSeats;
     totalSeats += 100; // giả định 100 ghế / show, nếu bạn có schema cinema thì thay vào
   });
-  const occupancyRate = totalSeats ? ((totalSeatsBooked / totalSeats) * 100).toPrecision(2) : 0;
+  const occupancyRate = totalSeats ? ((totalSeatsBooked / totalSeats) * 100).toPrecision(1) : 0;
 
   // ===== 6. Growth so với ngày trước =====
   const yesterdayStart = startOfDay(subDays(new Date(), 1));
@@ -64,13 +64,23 @@ export const getDashboardData = async (req, res) => {
     createdAt: { $gte: yesterdayStart, $lte: yesterdayEnd },
   });
 
-  const bookingsGrowth = yesterdayBookings.length ? ((todayBookings - yesterdayBookings.length) / yesterdayBookings.length) * 100 : 0;
+  let bookingsGrowth = 0;
+  if (yesterdayBookings.length === 0 && todayBookings !== 0) {
+    bookingsGrowth = todayBookings;
+  } else {
+    bookingsGrowth = ((todayBookings - yesterdayBookings.length) / yesterdayBookings.length) * 100;
+  }
 
   const yesterdayRevenue = yesterdayBookings.filter((b) => b.isPaid).reduce((sum, b) => sum + b.amount, 0);
 
-  const revenueGrowth = yesterdayRevenue ? ((todayRevenue - yesterdayRevenue) / yesterdayRevenue) * 100 : 0;
+  let revenueGrowth = 0;
+  if (yesterdayRevenue === 0 && todayRevenue !== 0) {
+    revenueGrowth = todayRevenue;
+  } else {
+    revenueGrowth = ((todayRevenue - yesterdayRevenue) / yesterdayRevenue) * 100;
+  }
 
-  const showsGrowth = 0; // TODO: so sánh số show mới
+  let showsGrowth = 0; // TODO: so sánh số show mới
   const usersGrowth = 0; // TODO: so sánh số user mới
 
   // ===== 7. Charts data theo timeRange =====

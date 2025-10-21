@@ -3,6 +3,7 @@
 import { customAlphabet } from "nanoid";
 import myloggerLog from "../loggers/mylogger.log.js";
 import { clerkClient } from "@clerk/express";
+import crypto from "crypto";
 
 export const nanoidBooking = customAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 8);
 
@@ -15,6 +16,10 @@ export const logError = (error, req, res, next) => {
 
   myloggerLog.error(resMessage, logData);
 };
+
+export function createMac(key, data) {
+  return crypto.createHmac("sha256", key).update(data).digest("hex");
+}
 
 // get admins from clerk
 export const getAdmins = async () => {

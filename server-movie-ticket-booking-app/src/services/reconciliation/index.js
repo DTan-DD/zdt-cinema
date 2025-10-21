@@ -165,8 +165,7 @@ export async function queryMoMo(orderId) {
   };
 
   const rawSignature = `accessKey=${config.momo.accessKey}&orderId=${orderId}&partnerCode=${config.momo.partnerCode}&requestId=${orderId}`;
-  const signature = crypto.createHmac("sha256", config.momo.secretKey).update(rawSignature).digest("hex");
-
+  const signature = createMac(config.momo.secretKey, rawSignature);
   const requestBody = {
     ...rawData,
     signature: signature,

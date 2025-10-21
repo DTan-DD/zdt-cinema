@@ -4,7 +4,7 @@ import { zalopayCallbackService } from "../services/payments/paymentZalopay.serv
 import { logError } from "../utils/index.js";
 
 class PaymentController {
-  momoCallback = async (req, res) => {
+  momoCallback = async (req, res, next) => {
     try {
       const momoResponse = await momoCallback(req, res);
       return res.status(200).json({

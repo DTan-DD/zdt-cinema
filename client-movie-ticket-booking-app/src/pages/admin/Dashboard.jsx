@@ -44,7 +44,7 @@ const Dashboard = () => {
   // Main dashboard cards
   const dashboardCards = [
     {
-      title: "Tổng vé",
+      title: "Tổng vé được bán",
       value: dashboardData.totalBookings || "0",
       icon: ChartLineIcon,
       change: dashboardData.bookingsGrowth || 0,
@@ -80,12 +80,16 @@ const Dashboard = () => {
       value: dashboardData.todayBookings || "0",
       icon: CalendarIcon,
       color: "bg-indigo-500",
+      change: `${dashboardData.bookingsGrowth || "0"} vé`,
+      changeValue: dashboardData.bookingsGrowth || 0,
     },
     {
       title: "Tổng doanh thu hôm nay",
-      value: `${currency} ${dashboardData.todayRevenue?.toLocaleString() || "0"}`,
+      value: `${dashboardData.todayRevenue?.toLocaleString() || "0"} ${currency}`,
       icon: TrendingUpIcon,
       color: "bg-emerald-500",
+      change: `${dashboardData.revenueGrowth?.toLocaleString() || "0"} ${currency}`,
+      changeValue: dashboardData.revenueGrowth || 0,
     },
     {
       title: "Chờ thanh toán",
@@ -115,7 +119,7 @@ const Dashboard = () => {
         setLoading(false);
       }
     } catch (error) {
-      console.error("Error fetching dashboard data: ", error);
+      console.error("Error fetching dashboard data");
       setLoading(false);
     } finally {
       setRefreshing(false);
@@ -128,13 +132,13 @@ const Dashboard = () => {
     }
   }, [user, timeRange]);
 
-  const renderChangeIndicator = (change) => {
-    if (!change) return null;
-    const isPositive = change > 0;
+  const renderChangeIndicator = (change, changeValue) => {
+    if (!changeValue) return null;
+    const isPositive = changeValue > 0;
     return (
       <div className={`flex items-center text-xs ${isPositive ? "text-green-600" : "text-red-600"}`}>
         {isPositive ? <ArrowUpIcon className="w-3 h-3 mr-1" /> : <ArrowDownIcon className="w-3 h-3 mr-1" />}
-        {Math.abs(change).toFixed(1)}%
+        {change}
       </div>
     );
   };
@@ -178,7 +182,6 @@ const Dashboard = () => {
                 <div className="flex-1">
                   <p className="text-sm font-medium text-gray-600">{card.title}</p>
                   <p className="text-2xl font-bold text-gray-900 mt-1">{card.value}</p>
-                  {renderChangeIndicator(card.change)}
                 </div>
                 <div className={`p-3 rounded-full ${card.color} text-white`}>
                   <card.icon className="w-6 h-6" />
@@ -198,6 +201,7 @@ const Dashboard = () => {
                   <div>
                     <p className="text-sm text-gray-600">{stat.title}</p>
                     <p className="text-xl font-bold text-gray-900 mt-1">{stat.value}</p>
+                    {renderChangeIndicator(stat.change, stat.changeValue)}
                   </div>
                   <div className={`p-2 rounded-full ${stat.color} text-white`}>
                     <stat.icon className="w-5 h-5" />

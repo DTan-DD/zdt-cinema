@@ -1,6 +1,6 @@
 "use strict";
 import axios from "axios";
-import { createMac } from "../../utils/zalopay.js";
+import { createMac } from "../../utils/index.js";
 import Booking from "../../models/Booking.js";
 import config from "../../../configs/zalopay.config.js";
 

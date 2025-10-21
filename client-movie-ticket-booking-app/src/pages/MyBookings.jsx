@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import CheckoutModal from "../components/CheckoutModal";
 import BookingDetailsModal from "../components/BookingDetailsModal";
 import { toast } from "react-hot-toast";
+import AdvancedPagination from "../components/Pagination";
 
 const MyBookings = () => {
   const currency = import.meta.env.VITE_CURRENCY;
@@ -19,14 +20,29 @@ const MyBookings = () => {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [isBookingLoading, setIsBookingLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortOrder, setSortOrder] = useState("newest");
 
   const getMyBookings = async () => {
     try {
+      const searchParams = {
+        sort: sortOrder,
+        page: currentPage,
+        limit: 5,
+      };
+
+      if (searchTerm) {
+        searchParams.search = searchTerm;
+      }
       const { data } = await axios.get("/v1/api/users/bookings", {
+        params: searchParams,
         headers: { Authorization: `Bearer ${await getToken()}` },
       });
       if (data.success) {
         setBookings(data.metadata.bookings);
+        setTotalPages(data.metadata.pagination.totalPages);
       }
     } catch (error) {
       console.error("Error fetching bookings: ", error);
@@ -114,14 +130,12 @@ const MyBookings = () => {
     if (user) {
       getMyBookings();
     }
-  }, [user]);
+  }, [user, sortOrder, currentPage, searchTerm]);
 
   return !isLoading ? (
     <div className="relative px-6 md:px-16 lg:px-40 pt-30 md:pt-40 min-h-[80vh]">
       <BlurCircle top="100px" left="100px" />
-      <div>
-        <BlurCircle bottom="0px" left="600px" />
-      </div>
+      <div></div>
       <h1 className="text-lg font-semibold mb-4">Các vé đã đặt:</h1>
 
       {bookings.map((item, index) => (
@@ -199,6 +213,9 @@ const MyBookings = () => {
 
       {/* Details Modal for paid bookings */}
       <BookingDetailsModal isOpen={isDetailsOpen} onClose={() => setIsDetailsOpen(false)} booking={selectedBooking} image_base_url={image_base_url} />
+
+      {/* Pagination */}
+      <AdvancedPagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
     </div>
   ) : (
     <Loading />

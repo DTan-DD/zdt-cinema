@@ -1,7 +1,7 @@
 import axios from "axios";
 import moment from "moment";
 import config from "../../../configs/config.js";
-import { createMac } from "../../utils/zalopay.js";
+import { createMac } from "../../utils/index.js";
 import Booking from "../../models/booking.model.js";
 import PaymentLog from "../../models/paymentLog.model.js";
 import { paymentQueue } from "../queues/paymentQueue.service.js";

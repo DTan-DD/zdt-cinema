@@ -4,7 +4,7 @@ import { BadRequestError } from "../../core/error.response.js";
 import PaymentLog from "../../models/paymentLog.model.js";
 import { paymentQueue } from "../queues/paymentQueue.service.js";
 import { updateBooking } from "../updateBooking.service.js";
-import { publishPaymentJob } from "../queues/queueRabbitMq.service.js";
+import { publishPaymentJob } from "../queues/queueRabbitMqV2.service.js";
 
 export async function createMomoPayment({ orderId, amount, originUrl }) {
   const endpoint = "https://test-payment.momo.vn/v2/gateway/api/create";
@@ -56,7 +56,8 @@ export const momoCallback = async (req, res) => {
 
     const rawSignature = `accessKey=${MOMO_ACCESS_KEY}&amount=${amount}&extraData=${extraData}&message=${message}&orderId=${orderId}&orderInfo=${orderInfo}&orderType=${orderType}&partnerCode=${MOMO_PARTNER_CODE}&payType=${payType}&requestId=${requestId}&responseTime=${req.body.responseTime}&resultCode=${resultCode}&transId=${transId}`;
 
-    const checkSignature = crypto.createHmac("sha256", MOMO_SECRET_KEY).update(rawSignature).digest("hex");
+    // const checkSignature = crypto.createHmac("sha256", MOMO_SECRET_KEY).update(rawSignature).digest("hex");
+    const checkSignature = createMomoSignature(MOMO_SECRET_KEY, rawSignature);
 
     if (checkSignature !== signature) {
       throw new BadRequestError("Invalid signature");
@@ -87,7 +88,7 @@ export const momoCallback = async (req, res) => {
         await paymentLog.save();
       }
 
-      await updateBooking({ bookingLogId: paymentLog._id });
+      // await updateBooking({ bookingLogId: paymentLog._id });
       /*
       // Push vào queue
       await paymentQueue.add("updateBooking", { logId: paymentLog._id });

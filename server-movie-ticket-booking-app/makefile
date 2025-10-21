@@ -15,7 +15,7 @@ cli-inspect:
 cli-all:
 	node cli/dlq-cli.js all-queues
 
-# Retry messages: make cli-retry queue=mail_queue.dlq count=3
+# Retry messages: make cli-retry queue=noti_queue.dlq count=3
 cli-retry:
 	@if [ -z "$(queue)" ]; then echo "❌ Missing 'queue' param. Usage: make cli-retry queue=<queue_name> count=<number>"; exit 1; fi
 	@node cli/dlq-cli.js retry $(queue) $(count)
