@@ -31,7 +31,7 @@ import notificationRouter from "./routes/notification.routes.js";
 import socketRouter from "./routes/socket.routes.js";
 import { startWorkers } from "./services/workers/workerManager.service.js";
 
-import testRouter from "./test/testNotification.js";
+// import testRouter from "./test/testNotification.js";
 import dlqAdminRoutes from "./routes/dlqAdmin.routes.js";
 
 const app = express();
@@ -88,7 +88,7 @@ app.use("/v1/api/queue", queueDashboard);
 app.use("/v1/api/notifications", notificationRouter);
 app.use("/v1/api/socket", socketRouter);
 
-app.use("/api", testRouter);
+// app.use("/api", testRouter);
 // Thêm routes quản lý DLQ (cần authentication trong thực tế)
 app.use("/api/admin/dlq", dlqAdminRoutes);
 
