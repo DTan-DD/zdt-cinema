@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import BlurCircle from "../components/BlurCircle";
 import { Heart, PlayCircleIcon, StarIcon, TicketIcon, X } from "lucide-react";
@@ -8,26 +8,32 @@ import MovieCard from "../components/MovieCard";
 import Loading from "../components/Loading";
 import { useAppContext } from "../context/AppContext";
 import toast from "react-hot-toast";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
-const MovieDetails = ({ isReleased = true }) => {
+const MovieDetails = () => {
   const navigate = useNavigate();
-  const { id, status } = useParams();
+  const { id } = useParams();
   const [show, setShow] = useState(null);
   const [showTrailer, setShowTrailer] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const { axios, getToken, user, image_base_url, shows, favoriteMovies, fetchFavoriteMovies } = useAppContext();
-  if (status === "upcoming") isReleased = false;
 
   const getShow = async () => {
     try {
       const { data } = await axios.get(`/v1/api/shows/${id}`);
       if (data.success) {
         setShow(data.metadata);
+        if (!data.metadata.movie.slug) {
+          setShow({
+            ...data.metadata,
+            movie: {
+              ...data.metadata.movie,
+              slug: data.metadata.movie.title.split(" ").join("-"),
+            },
+          });
+        }
       }
-    } catch (error) {
-      console.error("Error fetching shows: ", error);
-    }
+    } catch (error) {}
   };
 
   const handleFavorite = async () => {
@@ -120,16 +126,14 @@ const MovieDetails = ({ isReleased = true }) => {
               {videoId ? "Trailer" : "Không có trailer"}
             </button>
 
-            {isReleased && (
-              <a
-                href="#dateSelect"
-                className="flex items-center gap-2 px-5 md:px-7 py-3 text-sm bg-primary hover:bg-primary-dull transition rounded-md
+            <a
+              href="#dateSelect"
+              className="flex items-center gap-2 px-5 md:px-7 py-3 text-sm bg-primary hover:bg-primary-dull transition rounded-md
               font-medium cursor-pointer active:scale-95 text-white"
-              >
-                <TicketIcon className="w-5 h-5" />
-                Đặt vé
-              </a>
-            )}
+            >
+              <TicketIcon className="w-5 h-5" />
+              Đặt vé
+            </a>
 
             <button onClick={handleFavorite} className="bg-gray-700 hover:bg-gray-600 rounded-full p-2.5 transition cursor-pointer active:scale-95">
               <Heart className={`w-5 h-5 ${favoriteMovies.find((movie) => movie._id === show.movie._id) ? "fill-primary text-primary" : ""}`} />
@@ -196,7 +200,11 @@ const MovieDetails = ({ isReleased = true }) => {
       </div>
 
       {/* Booking */}
-      {Object.keys(show.dateTime).length > 0 ? <DateSelect dateTime={show.dateTime} id={id} /> : <p className="text-lg font-medium mt-20">Hiện không có lịch chiếu cho phim này</p>}
+      {Object.keys(show.dateTime).length > 0 ? (
+        <DateSelect dateTime={show.dateTime} id={id} slug={show.movie.slug} />
+      ) : (
+        <p className="text-lg font-medium mt-20">Hiện không có lịch chiếu cho phim này</p>
+      )}
 
       <p className="text-lg font-medium mt-20 mb-8">Bạn cũng có thể thích</p>
       <div className="flex flex-wrap max-sm:justify-center gap-8">

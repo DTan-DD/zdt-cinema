@@ -5,6 +5,7 @@
 @theme {
   --color-primary: #f84565;
   --color-primary-dull: #d63854;
+  --color-background: #09090b;
 }
 
 * {
@@ -36,4 +37,19 @@ input::-webkit-inner-spin-button {
 
 ::-webkit-calendar-picker-indicator {
   filter: invert(1);
+}
+
+@keyframes marquee-once {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+@layer utilities {
+  .animate-marquee-once {
+    animation: marquee-once 15s linear forwards;
+  }
 }

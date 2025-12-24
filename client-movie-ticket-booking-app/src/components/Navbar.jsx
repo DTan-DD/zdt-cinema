@@ -25,7 +25,7 @@ const Navbar = () => {
     { path: "/", label: "Trang chủ" },
     { path: "/movies", label: "Phim" },
     { path: "/theaters", label: "Rạp chiếu" },
-    { path: "/releases", label: "Sắp ra mắt" },
+    { path: "/movies/upcoming", label: "Sắp ra mắt" },
   ];
 
   return (

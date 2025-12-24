@@ -37,7 +37,7 @@ const UpcomingMovies = () => {
         <h1 className="text-lg font-medium my-4">Các phim sắp ra mắt:</h1>
         <div className="flex flex-wrap gap-8 max-sm:justify-center">
           {upcomingShows.map((movie) => (
-            <MovieCard key={movie._id} movie={movie} isReleased={false} />
+            <MovieCard key={movie._id} movie={movie} />
           ))}
         </div>
       </div>

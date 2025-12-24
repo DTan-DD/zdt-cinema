@@ -11,7 +11,7 @@ import AdvancedPagination from "../../components/Pagination";
 
 const ListShows = () => {
   const currency = import.meta.env.VITE_CURRENCY;
-  const { axios, getToken, user } = useAppContext();
+  const { axios, getToken, user, isCollapsedAdminSidebar } = useAppContext();
 
   const [shows, setShows] = useState([]);
   const [cinemas, setCinemas] = useState([]);
@@ -123,7 +123,6 @@ const ListShows = () => {
   const handleConfirmDelete = async () => {
     if (showToDelete) {
       try {
-        console.log(showToDelete._id);
         const { data } = await axios.put(
           `/v1/api/admin/delete-show/${showToDelete._id}`,
           {},
@@ -221,7 +220,7 @@ const ListShows = () => {
   };
 
   return !loading ? (
-    <>
+    <div className={`${isCollapsedAdminSidebar ? "ml-15" : "ml-55"} mt-12 transition-all duration-300`}>
       <Title text1="Danh sách" text2="Lịch Chiếu" />
 
       {/* Filter Controls */}
@@ -314,7 +313,7 @@ const ListShows = () => {
         </div>
       )}
 
-      <div className="max-w-6xl mt-6 overflow-x-auto">
+      <div className=" mt-6 overflow-x-auto">
         <table className="w-full border-collapse rounded-md overflow-hidden text-nowrap">
           <thead>
             <tr className="bg-primary/20 text-left text-white">
@@ -340,14 +339,14 @@ const ListShows = () => {
 
               return (
                 <tr key={show._id} className="border-b border-primary/10 bg-primary/5 even:bg-primary/10">
-                  <td className="p-2 min-w-45 pl-5">{show.movie.title}</td>
+                  <td className="p-2 min-w-45 pl-5">{show.movie.title.length > 40 ? show.movie.title.slice(0, 40) + "..." : show.movie.title}</td>
                   <td className="p-2">{show.cinema.name}</td>
                   <td className="p-2">{dateFormat(show.showDateTime)}</td>
                   <td className="p-2">
                     {currency} {show.showPrice}
                   </td>
                   <td className={`p-2 font-medium ${getStatusColor(status)}`}>{status}</td>
-                  <td className="p-2">{Object.keys(show.occupiedSeats).length}</td>
+                  <td className="p-2">{Object.keys(show.occupiedSeats).length}/90</td>
                   <td className="p-2">
                     {Object.keys(show.occupiedSeats).length * show.showPrice} {currency}
                   </td>
@@ -405,7 +404,7 @@ const ListShows = () => {
           }}
         />
       )}
-    </>
+    </div>
   ) : (
     <Loading />
   );

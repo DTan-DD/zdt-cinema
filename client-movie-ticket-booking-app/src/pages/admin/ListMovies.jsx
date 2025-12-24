@@ -8,7 +8,7 @@ import ConfirmDeleteModal from "../../components/admin/ConfirmDeleteModal";
 import AdvancedPagination from "../../components/Pagination";
 
 const ListMovies = () => {
-  const { axios, getToken, user } = useAppContext();
+  const { axios, getToken, user, isCollapsedAdminSidebar } = useAppContext();
 
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -165,7 +165,7 @@ const ListMovies = () => {
   };
 
   return !loading ? (
-    <>
+    <div className={`${isCollapsedAdminSidebar ? "ml-15" : "ml-55"} mt-12 transition-all duration-300`}>
       <Title text1="Danh sách" text2="Phim" />
 
       {/* Filter Controls */}
@@ -227,7 +227,7 @@ const ListMovies = () => {
         </div>
       )}
 
-      <div className="max-w-7xl mt-6 overflow-x-auto">
+      <div className=" mt-6 overflow-x-auto">
         <table className="w-full border-collapse rounded-md overflow-hidden text-nowrap">
           <thead>
             <tr className="bg-primary/20 text-left text-white">
@@ -316,7 +316,7 @@ const ListMovies = () => {
           }}
         />
       )}
-    </>
+    </div>
   ) : (
     <Loading />
   );

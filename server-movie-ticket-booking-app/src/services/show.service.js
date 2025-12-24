@@ -64,7 +64,7 @@ export const addShow = async (req, res) => {
   cinemasInput.forEach((cinema) => {
     cinema.shows.forEach((s) => {
       s.times.forEach((time) => {
-        const dateTimeString = `${s.date}T${time}`;
+        const dateTimeString = `${s.date}T${time}:00+07:00`;
         const showDateTime = new Date(dateTimeString);
 
         // validate showDateTime
@@ -178,6 +178,7 @@ export const getShowByCinema = async (req, res) => {
           poster_path: show.movie.poster_path,
           runtime: show.movie.runtime,
           genres: show.movie.genres,
+          slug: show.movie.slug,
         },
         showtimes: [],
       };
@@ -185,6 +186,7 @@ export const getShowByCinema = async (req, res) => {
 
     movieMap[movieId].showtimes.push({
       id: show._id,
+      showCode: show.showCode,
       date: new Date(show.showDateTime).toLocaleDateString([], { day: "2-digit", month: "2-digit", year: "numeric" }),
       time: new Date(show.showDateTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       screen: show.screen || "Screen 1", // nếu có field screen thì lấy từ DB
@@ -240,6 +242,7 @@ export const getShow = async (req, res) => {
     dateTime[date][cinemaId].times.push({
       time: show.showDateTime,
       showId: show._id,
+      showCode: show.showCode,
     });
   });
 
@@ -247,9 +250,9 @@ export const getShow = async (req, res) => {
 };
 
 export const getShowById = async (req, res) => {
-  const { showId } = req.params;
+  const { showCode } = req.params;
   // get all coming shows for the movie
-  const show = await Show.findById(showId).populate("cinema movie"); // lấy luôn thông tin rạp
+  const show = await Show.findOne({ showCode }).populate("cinema movie"); // lấy luôn thông tin rạp
 
   const movie = await Movie.findById(show.movie);
 

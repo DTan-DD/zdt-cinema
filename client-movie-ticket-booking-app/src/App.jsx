@@ -24,6 +24,7 @@ import AddMovies from "./pages/admin/AddMovies";
 import ListMovies from "./pages/admin/ListMovies";
 import ListCinemas from "./pages/admin/ListCinema";
 import ListUsers from "./pages/admin/ListUser";
+import ScrollToTop from "./components/ScrollToTop";
 
 const App = () => {
   const isAdminRoute = useLocation().pathname.startsWith("/admin");
@@ -36,10 +37,10 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/movies" element={<Movies />} />
-        <Route path="/releases" element={<UpcomingMovies />} />
-        <Route path="/movies/:id/:status" element={<MovieDetails />} />
-        <Route path="/movies/:id/" element={<MovieDetails />} />
-        <Route path="/movies/:id/:date/:showId" element={<SeatLayout />} />
+        <Route path="/movies/:status" element={<UpcomingMovies />} />
+        <Route path="/movies/:slug/:id" element={<MovieDetails />} />
+        {/* <Route path="/movies/:id/" element={<MovieDetails />} /> */}
+        <Route path="/movies/:slug/shows/:showCode" element={<SeatLayout />} />
         <Route path="/my-bookings" element={<MyBookings />} />
         <Route path="/theaters" element={<CinemaInfoPage />} />
         <Route path="/search" element={<SearchPage />} />
@@ -70,6 +71,7 @@ const App = () => {
           <Route path="list-users" element={<ListUsers />} />
         </Route>
       </Routes>
+      {!isAdminRoute && <ScrollToTop />}
       {!isAdminRoute && <Footer />}
     </>
   );

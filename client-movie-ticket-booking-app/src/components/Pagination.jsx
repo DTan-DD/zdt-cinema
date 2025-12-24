@@ -22,7 +22,6 @@ const AdvancedPagination = ({ currentPage, totalPages, onPageChange }) => {
     if (totalPages > 1) {
       range.push(totalPages);
     }
-    console.log(range);
     // Thêm dấu "..." vào những chỗ cần thiết
     range.forEach((i) => {
       if (l) {
@@ -36,7 +35,6 @@ const AdvancedPagination = ({ currentPage, totalPages, onPageChange }) => {
       rangeWithDots.push(i);
       l = i;
     });
-    console.log(rangeWithDots);
     return rangeWithDots;
   };
 

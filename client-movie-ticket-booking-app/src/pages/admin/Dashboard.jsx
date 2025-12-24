@@ -10,7 +10,7 @@ import { ResponsiveContainer, LineChart, Line, BarChart, Bar, XAxis, YAxis, Cart
 import isoTimeFormat from "../../lib/isoTimeFormat";
 
 const Dashboard = () => {
-  const { axios, getToken, user, image_base_url } = useAppContext();
+  const { axios, getToken, user, isCollapsedAdminSidebar } = useAppContext();
   const currency = import.meta.env.VITE_CURRENCY;
 
   const [dashboardData, setDashboardData] = useState({
@@ -44,7 +44,7 @@ const Dashboard = () => {
   // Main dashboard cards
   const dashboardCards = [
     {
-      title: "Tổng vé được bán",
+      title: "Tổng vé đã bán",
       value: dashboardData.totalBookings || "0",
       icon: ChartLineIcon,
       change: dashboardData.bookingsGrowth || 0,
@@ -144,8 +144,8 @@ const Dashboard = () => {
   };
 
   return !loading ? (
-    <>
-      <div className="flex justify-between items-center mb-6">
+    <div className={`${isCollapsedAdminSidebar ? "ml-15" : "ml-55"} mt-12 transition-all duration-300`}>
+      <div className={`flex justify-between items-center mb-6`}>
         <Title text1="Admin" text2="Dashboard" />
 
         <div className="flex items-center gap-4">
@@ -171,11 +171,11 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="relative">
+      <div className=" relative">
         <BlurCircle top="-100px" left="0px" />
 
         {/* Main Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className=" grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {dashboardCards.map((card, index) => (
             <div key={index} className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
@@ -320,7 +320,7 @@ const Dashboard = () => {
                     <p className="text-sm font-medium text-gray-900">
                       {currency} {booking.amount}
                     </p>
-                    <p className={`text-xs ${booking.isPaid ? "text-green-600" : "text-red-600"}`}>{booking.isPaid ? "Paid" : "Pending"}</p>
+                    <p className={`text-xs ${booking.isPaid ? "text-green-600" : "text-red-600"}`}>{booking.isPaid ? "Đã thanh toán" : "Chưa thanh toán"}</p>
                   </div>
                 </div>
               ))}
@@ -328,7 +328,7 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   ) : (
     <Loading />
   );

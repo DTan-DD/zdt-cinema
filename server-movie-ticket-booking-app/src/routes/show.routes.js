@@ -11,7 +11,7 @@ showRouter.get("/now-playing", asyncHandler(showController.getNowPlayingMoviesFr
 showRouter.get("/upcoming", asyncHandler(showController.getUpcomingShows));
 showRouter.get("/movies", asyncHandler(showController.getAvailableMovies));
 showRouter.get("/:movieId", asyncHandler(showController.getShow));
-showRouter.get("/get-show/:showId", asyncHandler(showController.getShowById));
+showRouter.get("/get-show/:showCode", asyncHandler(showController.getShowById));
 showRouter.get("/cinema/:cinemaId", asyncHandler(showController.getShowByCinema));
 // showRouter.use(protectAdmin);
 showRouter.post("/add", protectAdmin, asyncHandler(showController.addShow));

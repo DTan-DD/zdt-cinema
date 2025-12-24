@@ -28,7 +28,7 @@ const CinemaInfoPage = () => {
     if (!show) {
       return toast("Please select showtime!");
     }
-    navigate(`/movies/${show._id}/${selectedDate.split("/").reverse().join("-")}/${showTime.id}`);
+    navigate(`/movies/${show.slug}/shows/${showTime.showCode}`);
     scrollTo(0, 0);
   };
 
@@ -42,7 +42,7 @@ const CinemaInfoPage = () => {
         setSelectedCinema(data.metadata.cinemas[0]);
       }
     } catch (error) {
-      console.error("Error fetching cinemas:", error);
+      // console.error("Error fetching cinemas:", error);
     } finally {
       setLoading(false);
     }
@@ -54,7 +54,7 @@ const CinemaInfoPage = () => {
       const { data } = await axios.get(`/v1/api/shows/cinema/${cinemaId}`);
       setShows(data.metadata.movies);
     } catch (error) {
-      console.error("Error fetching shows:", error);
+      // console.error("Error fetching shows:", error);
     }
   };
 

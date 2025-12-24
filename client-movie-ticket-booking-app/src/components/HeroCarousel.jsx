@@ -86,7 +86,7 @@ const HeroCarousel = ({ shows = [], image_base_url }) => {
         {/* Action Buttons */}
         <div className="flex flex-wrap items-center gap-4 mt-18 md:mt-4">
           <button
-            onClick={() => navigate(`/movies/${currentShow._id}`)}
+            onClick={() => navigate(`/movies/${currentShow.slug}/${currentShow._id}`)}
             className="flex items-center gap-3 px-4 md:px-6 py-4 bg-primary hover:bg-primary-dull 
                      transition-all duration-300 rounded-full font-semibold text-sm md:text-lg
                      shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95"

@@ -1,18 +1,20 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { assets } from "../assets/assets";
 import Loading from "../components/Loading";
 import { ArrowRightIcon, BadgeDollarSignIcon, ClockIcon, LocationEditIcon } from "lucide-react";
-import isoTimeFormat from "../lib/isoTimeFormat";
 import BlurCircle from "../components/BlurCircle";
 import toast from "react-hot-toast";
 import { useAppContext } from "../context/AppContext";
-import ZoomableSeatsLayout from "../components/SeatsLayout";
+import ZoomableSeatsLayout from "../components/ZoomableSeatsLayout";
 import CheckoutModal from "../components/CheckoutModal";
 import { useUser } from "@clerk/clerk-react";
+import dateFormat from "../lib/dateFormat";
 
 const SeatLayout = () => {
-  const { showId } = useParams(); //id, date,
+  const navigate = useNavigate();
+  const { showCode } = useParams(); //id, date,
+  const [showId, setShowId] = useState(null);
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [show, setShow] = useState(null);
   const [occupiedSeats, setOccupiedSeats] = useState([]);
@@ -34,9 +36,10 @@ const SeatLayout = () => {
 
   const getShow = async () => {
     try {
-      const { data } = await axios.get(`/v1/api/shows/get-show/${showId}`);
+      const { data } = await axios.get(`/v1/api/shows/get-show/${showCode}`);
       if (data.success) {
         setShow(data.metadata.show);
+        setShowId(data.metadata.show._id);
       }
     } catch (error) {
       console.error("Error fetching shows: ", error);
@@ -44,8 +47,9 @@ const SeatLayout = () => {
   };
 
   const getOccupiedSeat = async () => {
+    if (!show) return;
     try {
-      const { data } = await axios.get(`/v1/api/bookings/seats/${showId}`);
+      const { data } = await axios.get(`/v1/api/bookings/seats/${show._id}`);
       if (data.success) {
         setOccupiedSeats(data.metadata.occupiedSeats);
       } else {
@@ -120,8 +124,12 @@ const SeatLayout = () => {
 
   useEffect(() => {
     getShow();
-    getOccupiedSeat();
+    // getOccupiedSeat();
   }, []);
+
+  useEffect(() => {
+    getOccupiedSeat();
+  }, [show]);
 
   // Helper function to format runtime
   const formatRuntime = (minutes) => {
@@ -148,7 +156,15 @@ const SeatLayout = () => {
             <img src={image_base_url + show.movie.backdrop_path} alt={show.movie.title} className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
             <div className="absolute bottom-4 left-4 right-4">
-              <h2 className="text-white text-xl md:text-2xl font-bold leading-tight mb-1">{show.movie.title}</h2>
+              <h2
+                onClick={() => {
+                  navigate(`/movies/${show.movie.slug}/${show.movie._id}`);
+                  scrollTo(0, 0);
+                }}
+                className="text-white text-xl md:text-2xl font-bold leading-tight mb-1 cursor-pointer hover:text-amber-300"
+              >
+                {show.movie.title}
+              </h2>
               {show.movie.tagline && <p className="text-gray-200 text-sm italic">{show.movie.tagline}</p>}
             </div>
           </div>
@@ -186,7 +202,7 @@ const SeatLayout = () => {
                   <ClockIcon className="w-5 h-5 text-blue-600" />
                   <div>
                     <p className="text-sm font-medium text-gray-600">Thời gian</p>
-                    <p className="text-sm text-blue-600">{isoTimeFormat(show.showDateTime)}</p>
+                    <p className="text-sm text-blue-600">{dateFormat(show.showDateTime)}</p>
                   </div>
                 </div>
 

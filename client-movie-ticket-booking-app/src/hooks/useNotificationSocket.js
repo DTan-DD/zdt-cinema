@@ -17,7 +17,7 @@ export function useNotificationSocket(onNotification) {
 
     // lắng nghe noti realtime
     socket.on("notification", (notif) => {
-      console.log("🔔 New notification:", notif);
+      // console.log("🔔 New notification:", notif);
       if (onNotification) onNotification(notif);
     });
 

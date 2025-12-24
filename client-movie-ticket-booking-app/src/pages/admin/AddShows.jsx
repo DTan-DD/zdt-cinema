@@ -8,7 +8,7 @@ import { useAppContext } from "../../context/AppContext";
 import toast from "react-hot-toast";
 
 const AddShows = () => {
-  const { axios, getToken, user, image_base_url } = useAppContext();
+  const { axios, getToken, user, image_base_url, isCollapsedAdminSidebar } = useAppContext();
 
   const currency = import.meta.env.VITE_CURRENCY;
   const [nowPlayingMovies, setNowPlayingMovies] = useState([]);
@@ -165,7 +165,7 @@ const AddShows = () => {
   }, [user]);
 
   return nowPlayingMovies.length > 0 ? (
-    <>
+    <div className={`${isCollapsedAdminSidebar ? "ml-15" : "ml-55"} mt-12 transition-all duration-300`}>
       <Title text1="Danh sách" text2="Shows" />
 
       {/* Movies Grid */}
@@ -320,7 +320,7 @@ const AddShows = () => {
       >
         {addingShow ? "Đang thêm..." : "Thêm suất chiếu"}
       </button>
-    </>
+    </div>
   ) : (
     <Loading />
   );

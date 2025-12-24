@@ -22,6 +22,7 @@ export const AppProvider = ({ children }) => {
   const socketRef = useRef(null);
   const broadcastChannelRef = useRef(null);
   const timeoutIdRef = useRef(null); // 👈 Thêm ref cho timeout
+  const [isCollapsedAdminSidebar, setIsCollapsedAdminSidebar] = useState(false);
 
   const { user } = useUser();
   const { getToken } = useAuth();
@@ -66,7 +67,7 @@ export const AppProvider = ({ children }) => {
     }
 
     const token = await getToken({ template: "myJwtTemplate" });
-    console.log("Refreshed token");
+    // console.log("Refreshed token");
     cachedToken = token;
     lastTokenTime = now;
     return token;
@@ -86,7 +87,7 @@ export const AppProvider = ({ children }) => {
       messageHandler = (msg) => {
         if (msg.type === "SOCKET_EXISTS" && msg.userId === user?.id) {
           // Đã có socket trong tab khác, không tạo mới
-          console.log("✅ Socket already exists in another tab, skipping creation");
+          // console.log("✅ Socket already exists in another tab, skipping creation");
           shouldCreateSocket = false;
           if (timeoutIdRef.current) {
             clearTimeout(timeoutIdRef.current);
@@ -95,7 +96,7 @@ export const AppProvider = ({ children }) => {
 
         if (msg.type === "SOCKET_CREATED" && msg.userId === user?.id) {
           // Tab khác vừa tạo socket, không tạo nữa
-          console.log("✅ Another tab just created socket, skipping creation");
+          // console.log("✅ Another tab just created socket, skipping creation");
           shouldCreateSocket = false;
           if (timeoutIdRef.current) {
             clearTimeout(timeoutIdRef.current);
@@ -114,7 +115,7 @@ export const AppProvider = ({ children }) => {
       // Đợi 150ms để nhận phản hồi từ tab khác
       timeoutIdRef.current = setTimeout(async () => {
         if (shouldCreateSocket && user?.id) {
-          console.log("🔄 Creating new socket connection...");
+          // console.log("🔄 Creating new socket connection...");
 
           // Cleanup socket cũ nếu có
           if (socketRef.current) {
@@ -134,7 +135,7 @@ export const AppProvider = ({ children }) => {
           socketRef.current = socket;
 
           socket.on("connect", () => {
-            console.log("✅ Socket connected:", socket.id);
+            // console.log("✅ Socket connected:", socket.id);
             // Thông báo cho các tab khác biết đã tạo socket
             if (broadcastChannelRef.current) {
               broadcastChannelRef.current.postMessage({
@@ -155,14 +156,14 @@ export const AppProvider = ({ children }) => {
           });
 
           socket.on("connect_error", async (error) => {
-            console.log("❌ Socket connection error:", error);
+            // console.log("❌ Socket connection error:", error);
             const newToken = await getValidClerkToken();
             socket.auth = { token: newToken };
             socket.connect();
           });
 
           socket.on("disconnect", async (reason) => {
-            console.log("⚠️ Socket disconnected:", reason);
+            // console.log("⚠️ Socket disconnected:", reason);
             if (reason === "io server disconnect" || reason === "transport close") {
               const newToken = await getValidClerkToken();
               socket.auth = { token: newToken };
@@ -221,7 +222,7 @@ export const AppProvider = ({ children }) => {
   // Các hàm còn lại giữ nguyên
   const markAllAsSeen = async () => {
     try {
-      console.log("markAllAsSeen");
+      // console.log("markAllAsSeen");
       const token = await getToken();
       const response = await axios.post(
         `/v1/api/notifications/mask-all-seen`,
@@ -244,7 +245,7 @@ export const AppProvider = ({ children }) => {
   const markAsRead = async (type) => {
     try {
       let typeNotif = "";
-      console.log("markAllAsRead");
+      // console.log("markAllAsRead");
       if (!type || (type !== "bookings" && type !== "shows")) return;
       switch (type) {
         case "bookings":
@@ -333,6 +334,8 @@ export const AppProvider = ({ children }) => {
     }
   }, [user]);
 
+  const handleCollapseAdminSidebar = () => setIsCollapsedAdminSidebar(!isCollapsedAdminSidebar);
+
   const value = {
     axios,
     fetchIsAdmin,
@@ -350,6 +353,8 @@ export const AppProvider = ({ children }) => {
     markAllAsSeen,
     markAsRead,
     socket: socketRef.current,
+    handleCollapseAdminSidebar,
+    isCollapsedAdminSidebar,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

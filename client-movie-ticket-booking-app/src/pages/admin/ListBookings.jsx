@@ -9,7 +9,7 @@ import AdvancedPagination from "../../components/Pagination";
 
 const ListBookings = () => {
   const currency = import.meta.env.VITE_CURRENCY;
-  const { axios, getToken, user } = useAppContext();
+  const { axios, getToken, user, isCollapsedAdminSidebar } = useAppContext();
 
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -127,7 +127,7 @@ const ListBookings = () => {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return !loading ? (
-    <>
+    <div className={`${isCollapsedAdminSidebar ? "ml-15" : "ml-55"} mt-12 transition-all duration-300`}>
       <Title text1="Danh sách" text2="Bookings" />
 
       {/* Filter Controls */}
@@ -170,21 +170,21 @@ const ListBookings = () => {
         </div>
       </div>
 
-      <div className="max-w-6xl mt-6 overflow-x-auto">
-        <table className="w-full border-collapse rounded-md overflow-hidden text-nowrap">
+      <div className=" mt-6 overflow-x-auto">
+        <table className="w-full border-collapse rounded-md overflow-x-auto text-nowrap">
           <thead>
             <tr className="bg-primary/20 text-left text-white">
               <th className="p-2 font-medium pl-5">Booking Code</th>
-              <th className="p-2 font-medium">User Name</th>
-              <th className="p-2 font-medium">Movie Name</th>
-              <th className="p-2 font-medium">Cinema</th>
-              <th className="p-2 font-medium">Show Time</th>
+              <th className="p-2 font-medium">Khách hàng</th>
+              <th className="p-2 font-medium">Phim</th>
+              <th className="p-2 font-medium">Rạp chiếu</th>
+              <th className="p-2 font-medium">Suất chiếu</th>
               {/* <th className="p-2 font-medium">Seats</th> */}
-              <th className="p-2 font-medium">Amount</th>
+              <th className="p-2 font-medium">Thu nhập</th>
               {/* <th className="p-2 font-medium">Payment Method</th> */}
-              <th className="p-2 font-medium">Status</th>
+              <th className="p-2 font-medium">Trạng thái</th>
               {/* <th className="p-2 font-medium">Payment Date</th> */}
-              <th className="p-2 font-medium">Actions</th>
+              <th className="p-2 font-medium">Thao tác</th>
             </tr>
           </thead>
           <tbody className="text-sm font-light">
@@ -194,8 +194,8 @@ const ListBookings = () => {
               return (
                 <tr key={booking._id} className="border-b border-primary/10 bg-primary/5 even:bg-primary/10">
                   <td className="p-2 min-w-25 pl-5 font-mono text-xs">{booking.bookingCode}</td>
-                  <td className="p-2">{booking.user.name}</td>
-                  <td className="p-2">{booking.show.movie.title}</td>
+                  <td className="p-2">{booking.user.name.length > 10 ? booking.user.name.slice(0, 10) + " ..." : booking.user.name}</td>
+                  <td className="p-2">{booking.show.movie.title.length > 30 ? booking.show.movie.title.slice(0, 30) + " ..." : booking.show.movie.title}</td>
                   <td className="p-2">{booking.show.cinema.name}</td>
                   <td className="p-2">{dateFormat(booking.show.showDateTime)}</td>
                   {/* <td className="p-2">
@@ -206,7 +206,7 @@ const ListBookings = () => {
                           .join(", ")}
                   </td> */}
                   <td className="p-2">
-                    {currency} {booking.amount}
+                    {booking.amount} {currency}
                   </td>
                   {/* <td className="p-2 capitalize">{booking.paymentMethod}</td> */}
                   <td className={`p-2 font-medium ${getStatusColor(status)}`}>{status}</td>
@@ -226,37 +226,6 @@ const ListBookings = () => {
       </div>
 
       {/* Pagination */}
-      {/* {totalPages > 1 && (
-        <div className="flex justify-center mt-6">
-          <nav className="flex items-center space-x-2">
-            <button
-              onClick={() => paginate(currentPage - 1)}
-              disabled={currentPage === 1}
-              className={`px-3 py-2 rounded ${currentPage === 1 ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-white border border-gray-300 text-gray-500 hover:bg-gray-50"}`}
-            >
-              Trước
-            </button>
-
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((number) => (
-              <button
-                key={number}
-                onClick={() => paginate(number)}
-                className={`px-3 py-2 rounded ${currentPage === number ? "bg-primary text-white" : "bg-white border border-gray-300 text-gray-500 hover:bg-gray-50"}`}
-              >
-                {number}
-              </button>
-            ))}
-
-            <button
-              onClick={() => paginate(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className={`px-3 py-2 rounded ${currentPage === totalPages ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-white border border-gray-300 text-gray-500 hover:bg-gray-50"}`}
-            >
-              Sau
-            </button>
-          </nav>
-        </div>
-      )} */}
       <AdvancedPagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
 
       {/* Edit Modal */}
@@ -270,7 +239,7 @@ const ListBookings = () => {
           onUpdate={handleUpdateBooking}
         />
       )}
-    </>
+    </div>
   ) : (
     <Loading />
   );

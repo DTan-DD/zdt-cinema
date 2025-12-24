@@ -1,11 +1,13 @@
 "use strict";
 import { Schema, model } from "mongoose";
+import { nanoid } from "nanoid";
 
 const DOCUMENT_NAME = "show";
 const COLLECTION_NAME = "shows";
 
 const showSchema = new Schema(
   {
+    showCode: { type: String, unique: true, index: true, default: () => nanoid(10) },
     movie: { type: String, required: true, ref: "movie" },
     cinema: { type: String, required: true, ref: "cinema" },
     showDateTime: { type: Date, required: true },

@@ -4,7 +4,7 @@ import { BuildingIcon, CalendarIcon, CheckCircleIcon, CheckIcon, ChevronLeftIcon
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
-const DateSelect = ({ dateTime, id }) => {
+const DateSelect = ({ dateTime, slug }) => {
   const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedShow, setSelectedShow] = useState(null);
@@ -13,7 +13,7 @@ const DateSelect = ({ dateTime, id }) => {
     if (!selectedShow) {
       return toast("Please select showtime!");
     }
-    navigate(`/movies/${id}/${selectedDate}/${selectedShow}`);
+    navigate(`/movies/${slug}/shows/${selectedShow}`);
     scrollTo(0, 0);
   };
 
@@ -206,14 +206,14 @@ const DateSelect = ({ dateTime, id }) => {
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
                           {cinema.times.map((t) => {
                             const showTime = new Date(t.time);
-                            const isSelected = selectedShow === t.showId;
+                            const isSelected = selectedShow === t.showCode;
                             const isAlmostFull = t.availableSeats < 10;
                             const isFull = t.availableSeats === 0;
 
                             return (
                               <button
                                 key={t.showId}
-                                onClick={() => setSelectedShow(t.showId)}
+                                onClick={() => setSelectedShow(t.showCode)}
                                 disabled={isFull}
                                 className={`relative p-3 rounded-lg text-sm font-medium transition-all duration-200 border-2 ${
                                   isFull
@@ -227,9 +227,10 @@ const DateSelect = ({ dateTime, id }) => {
                               >
                                 <div className="text-center">
                                   <div className="font-semibold">
-                                    {showTime.toLocaleTimeString([], {
+                                    {showTime.toLocaleTimeString("vi-VN", {
                                       hour: "2-digit",
                                       minute: "2-digit",
+                                      timeZone: "Asia/Ho_Chi_Minh",
                                     })}
                                   </div>
                                   {/* <div className="text-xs mt-1 opacity-75">{isFull ? "Full" : `${t.availableSeats} seats`}</div> */}

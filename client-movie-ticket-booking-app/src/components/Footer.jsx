@@ -18,7 +18,7 @@ const Footer = () => {
         </div>
         <div className="flex-1 flex items-start md:justify-end gap-10 md:gap-40">
           <div>
-            <h2 className="font-semibold mb-5 text-white">DiTi Team</h2>
+            <h2 className="font-semibold mb-3 text-white">DiTi Team</h2>
             <ul className="text-sm space-y-2">
               <li>
                 <a href="#">Trang chủ</a>
@@ -35,10 +35,19 @@ const Footer = () => {
             </ul>
           </div>
           <div>
-            <h2 className="font-semibold mb-5 text-white">Liên hệ với chúng tôi</h2>
+            <h2 className="font-semibold mb-3 text-white">Liên hệ với chúng tôi</h2>
             <div className="text-sm space-y-2">
-              <p>+1-234-567-890</p>
-              <p>tan.ddd03979@gmail.com</p>
+              <p>Phone: +84-775-658-079</p>
+              <p>Email: tan.ddd03979@gmail.com</p>
+            </div>
+            <h2 className="font-semibold mt-5 mb-3 text-white">Liên kết trang web</h2>
+            <div className="text-sm space-y-2">
+              <p>
+                DiTi Shop:{" "}
+                <a href="https://ditishop.vercel.app" target="_blank" className="hover:text-amber-300">
+                  https://ditishop.vercel.app
+                </a>
+              </p>
             </div>
           </div>
         </div>

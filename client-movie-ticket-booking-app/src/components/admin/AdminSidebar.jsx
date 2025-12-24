@@ -4,7 +4,7 @@ import { LayoutDashboard, PlusCircle, ShoppingBag, UserIcon, PlusSquare, Monitor
 import { useAppContext } from "../../context/AppContext";
 
 const AdminSidebar = ({ assets }) => {
-  const { user, notifications, markAsRead } = useAppContext();
+  const { user, notifications, markAsRead, handleCollapseAdminSidebar } = useAppContext();
 
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [notificationCounts, setNotificationCounts] = useState({
@@ -114,11 +114,18 @@ const AdminSidebar = ({ assets }) => {
     },
   ];
 
+  const handleCollapse = () => {
+    setIsCollapsed(!isCollapsed);
+    handleCollapseAdminSidebar();
+  };
+
   return (
-    <div className={`relative h-[calc(100vh-64px)] flex flex-col border-r border-gray-300/20 transition-all duration-300 ease-in-out overflow-hidden ${isCollapsed ? "w-20" : "w-60"}`}>
+    <div
+      className={`fixed top-1/10 left-0 z-50  h-[calc(100vh-64px)] flex flex-col border-r border-gray-300/20 transition-all duration-300 ease-in-out overflow-hidden ${isCollapsed ? "w-20" : "w-60"}`}
+    >
       {/* Toggle Button */}
       <button
-        onClick={() => setIsCollapsed(!isCollapsed)}
+        onClick={() => handleCollapse()}
         className="absolute -right-3 top-8 bg-gray-800 border border-gray-700 rounded-full p-1.5 shadow-lg hover:bg-gray-700 transition-all duration-200 z-10 hover:scale-110"
         aria-label={isCollapsed ? "Mở rộng sidebar" : "Thu gọn sidebar"}
       >

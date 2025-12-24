@@ -44,7 +44,7 @@ export const getDashboardData = async (req, res) => {
 
   // ===== 4. Pending payments =====
   const pendingPaymentsDocs = bookings.filter((b) => !b.isPaid);
-  const pendingPayments = pendingPaymentsDocs.length;
+  const pendingPayments = pendingPaymentsDocs.filter((b) => b.createdAt >= todayStart && b.createdAt <= todayEnd).length;
   const pendingPaymentAmount = pendingPaymentsDocs.reduce((sum, b) => sum + b.amount, 0);
 
   // ===== 5. Occupancy rate =====
@@ -68,7 +68,7 @@ export const getDashboardData = async (req, res) => {
   if (yesterdayBookings.length === 0 && todayBookings !== 0) {
     bookingsGrowth = todayBookings;
   } else {
-    bookingsGrowth = ((todayBookings - yesterdayBookings.length) / yesterdayBookings.length) * 100;
+    bookingsGrowth = todayBookings - yesterdayBookings.filter((b) => b.isPaid).length;
   }
 
   const yesterdayRevenue = yesterdayBookings.filter((b) => b.isPaid).reduce((sum, b) => sum + b.amount, 0);
@@ -77,7 +77,7 @@ export const getDashboardData = async (req, res) => {
   if (yesterdayRevenue === 0 && todayRevenue !== 0) {
     revenueGrowth = todayRevenue;
   } else {
-    revenueGrowth = ((todayRevenue - yesterdayRevenue) / yesterdayRevenue) * 100;
+    revenueGrowth = todayRevenue - yesterdayRevenue;
   }
 
   let showsGrowth = 0; // TODO: so sánh số show mới

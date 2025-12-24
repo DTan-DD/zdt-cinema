@@ -7,7 +7,7 @@ import UserDetailModal from "../../components/admin/UserDetailModal";
 import AdvancedPagination from "../../components/Pagination";
 
 const ListUsers = () => {
-  const { axios, getToken, user } = useAppContext();
+  const { axios, getToken, user, isCollapsedAdminSidebar } = useAppContext();
 
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -89,7 +89,7 @@ const ListUsers = () => {
   };
 
   return !loading ? (
-    <>
+    <div className={`${isCollapsedAdminSidebar ? "ml-15" : "ml-55"} mt-12 transition-all duration-300`}>
       <Title text1="Danh sách" text2="Người dùng" />
 
       {/* Filter Controls */}
@@ -140,7 +140,7 @@ const ListUsers = () => {
         </div>
       )}
 
-      <div className="max-w-7xl mt-6 overflow-x-auto">
+      <div className=" mt-6 overflow-x-auto">
         <table className="w-full border-collapse rounded-md overflow-hidden text-nowrap">
           <thead>
             <tr className="bg-primary/20 text-left text-white">
@@ -196,7 +196,7 @@ const ListUsers = () => {
       {showDetailModal && ( //
         <UserDetailModal isOpen={showDetailModal} onClose={() => setShowDetailModal(false)} user={userDetail} />
       )}
-    </>
+    </div>
   ) : (
     <Loading />
   );
